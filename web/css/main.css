@@ -1,0 +1,160 @@
+body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background-image: linear-gradient(0deg, #77b2d4, #adf0fc);
+}
+
+p {
+    font-size: larger;
+    font-weight: bold;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+    font-weight: bolder;
+    font-size: larger;
+}
+
+a:visited {
+    text-decoration: none;
+    color: black;
+}
+
+select {
+    width: 150px;
+}
+
+.navbar {
+    overflow: hidden;
+    width: 100%;
+    background-color:#9579d1;
+    margin: 0;
+    top: 0;
+    position: fixed;
+    z-index:100; 
+}
+
+.navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background: #ffa5d8;
+    color: black;
+}
+
+.main {
+    padding: 16px;
+}
+
+.rankings {
+    width: 45%;
+    margin-left: 5%;
+    border-style: inset;
+    min-height: 500px;
+}
+
+.stats {
+    width: 45%;
+    margin-right: 5%;
+    border-style: inset;
+    min-height: 500px;
+}
+
+.main ul {
+    list-style: none;
+}
+
+.main li {
+    padding-bottom: 8%;
+}
+
+.usercard {
+    font-size: 160%;
+}
+
+ol li {
+    counter-increment: countervar;
+    margin-bottom: 20px;
+
+}
+ol li:before {
+    content: counter(countervar) ". ";
+    font-weight: bolder;
+    
+}
+
+ol {
+    list-style: none;
+    counter-reset: countervar;
+}
+
+.statelist li:hover {
+    font-size: larger;
+}
+
+.statelist {
+    min-width: 25%;
+}
+
+.main-right {
+    max-width: 10%;
+    min-width: 20%;
+    margin-right: 10%;
+}
+
+.playerpfp {
+    margin-top: 10%;
+    width: 120px;
+    height: 120px;
+    border-radius: 25px;
+}
+
+.playerlist {
+    padding-top: 3%;
+}
+
+
+.btn {
+	background-color:#9579d1;
+	border: 0;
+	border-radius: 50px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+	color: black;
+	font-size: 16px;
+	padding: 12px 25px;
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	letter-spacing: 1px;
+    font-size: 50px
+}
+
+.btn:hover {
+    background-color:#be9ddf;
+}
+
+.btn-above {
+    background-color:#9579d1;
+	border: 0;
+	border-radius: 50px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+	color: black;
+	font-size: 16px;
+	padding: 12px 25px;
+	position: fixed;
+	bottom: 130px;
+	right: 30px;
+	letter-spacing: 1px;
+    font-size: 50px
+}
+
+.btn-above:hover {
+    background-color:#be9ddf;
+}

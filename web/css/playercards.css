@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+
+* {
+	box-sizing: border-box;
+}
+
+
+body {
+	font-family: 'Muli', sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	min-height: 100vh;
+	margin: 0;
+}
+
+.user-settings {
+	background-color: rgb(236, 236, 236);
+	border-radius: 10px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+	display: flex;
+	max-width: 100%;
+	margin: 20px;
+	overflow: hidden;
+	width: 900px;
+	height: 500px;
+}
+
+.player {
+	background-color: rgb(236, 236, 236);
+	border-radius: 10px;
+	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+	display: flex;
+	max-width: 100%;
+	margin: 20px;
+	overflow: hidden;
+	width: 900px;
+	height: 180px;
+}
+
+.player h6 {
+	opacity: 0.6;
+	margin: 0;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+}
+
+.player-info h4 {
+	margin: 5px;
+}
+
+.player h2 {
+	letter-spacing: 1px;
+	margin: 10px 0;
+}
+
+.player-preview {
+	background-color:#9579d1;
+	color: #fff;
+	padding-top: 10px;
+	padding-left: 20px;
+	padding-right: 20px;
+	max-width: 250px;
+}
+
+.player-preview a {
+	color: #fff;
+	display: inline-block;
+	font-size: 12px;
+	opacity: 0.6;
+	margin-top: 10px;
+	text-decoration: none;
+}
+
+.player-preview h4 {
+	margin: 0px;
+}
+
+.player-info {
+	padding: 10px;
+	position: relative;
+	width: 100%;
+	background-size: 100%;
+}
+
+
+.progress-container {
+	position: absolute;
+	top: 30px;
+	right: 30px;
+	text-align: right;
+	width: 130px;
+}
+
+.progress {
+	background-color: #ddd;
+	border-radius: 3px;
+	height: 5px;
+}
+
+.progress-after {
+	border-radius: 3px;
+	background-color:#9579d1;
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 5px;
+}
+
+.progress-text {
+	font-size: 15px;
+	letter-spacing: 1px;
+}
+

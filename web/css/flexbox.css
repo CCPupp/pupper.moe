@@ -1,0 +1,29 @@
+.flex-center {
+    display: flex;
+    height: 100px;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-left: 50px;
+    margin-top: -20px;
+}
+
+.flex-container {
+    margin-top: 5%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.flex-object {
+    margin: 2%;
+}
+
+.flex-left {
+    display: flex;
+    justify-content: left;
+}
+
+.flex-right {
+    display: flex;
+    justify-content: right;
+}
