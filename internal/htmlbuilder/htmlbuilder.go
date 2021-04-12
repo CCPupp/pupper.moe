@@ -36,7 +36,9 @@ func BuildHTMLHeader() string {
 }
 
 func BuildHTMLFooter() string {
-	var finalFooter string = `</html>`
+	var finalFooter string = `
+	<script src="../web/scripts/localstorage.js"></script>
+	</html>`
 	return finalFooter
 }
 
@@ -46,7 +48,7 @@ func BuildHTMLNavbar() string {
         <a href="/">Home</a>
         <a href="/all">All Users / Discords</a>
         <a href="https://twitter.com/ponparpanpor">Contact</a>
-        <a href="/login">Login</a>
+        <a href="/login">Customize My Card</a>
     </div>
 	<br>
 	<br>
@@ -99,20 +101,7 @@ func CreateAllHTML() string {
 }
 
 func CreateStateHTML(state string) string {
-	// Open our jsonFile
-	discordJsonFile, err := os.Open("web/data/discords.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer discordJsonFile.Close()
-
-	discordByteValue, _ := ioutil.ReadAll(discordJsonFile)
-
-	var discords discord.Discords
-
-	json.Unmarshal(discordByteValue, &discords)
+	discords := discord.GetDiscordJSON()
 	discordString := ""
 	for i := 0; i < len(discords.Discords); i++ {
 		if discords.Discords[i].State == state {
@@ -120,23 +109,7 @@ func CreateStateHTML(state string) string {
 		}
 	}
 	var finalString = BuildHTMLHeader()
-	// Open our jsonFile
-	jsonFile, err := os.Open("web/data/users.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	// we initialize our Players array
-	var users player.Users
-
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'players' which we defined above
-	json.Unmarshal(byteValue, &users)
+	users := player.GetUserJSON()
 
 	users = player.SortUsers(users)
 
@@ -147,38 +120,18 @@ func CreateStateHTML(state string) string {
 	finalString += state
 	finalString += `</a>
 	` + discordString + `
-	<a href="/login">Login</a>
+	<a href="/login">Customize My Card</a>
     </div>
 	<br>
 	<br>
+	<p id="result"></p>
 	<div class="playerlist">
 	`
 	rank := 0
 	for i := 0; i < len(users.Users); i++ {
 		if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) {
 			rank++
-			finalString += (`<div class="players-container">
-								<div class="player">
-									<div class="player-preview">
-										<h4>#` + strconv.Itoa(rank) + `</h4>
-										<image class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(users.Users[i].ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(users.Users[i].ID) + `"></image>
-									</div>
-									<div class="player-info" style="background-image: linear-gradient(45deg, rgb(236, 236, 236), white);">
-										<div class="progress-container">
-											<span class="progress-text">
-												<h5>Level ` + FloatToString(float64(users.Users[i].Statistics.Level.Current)) + `</h5>
-											</span>
-										</div>
-										<h6>` + state + `</h6>
-										<a href="https://osu.ppy.sh/users/` + strconv.Itoa(users.Users[i].ID) + `" target="_blank"><h2>` + users.Users[i].Username + `</h2></a>
-										<h4>Total PP: ` + strconv.Itoa(int(users.Users[i].Statistics.Pp)) + `</h4>
-										<h4>Global Rank: ` + strconv.Itoa(users.Users[i].Statistics.Global_rank) + `</h4>
-										<h4>Accuracy: ` + FloatToString(users.Users[i].Statistics.Accuracy) + `</h4>
-										<h4>Playcount: ` + strconv.Itoa(users.Users[i].Statistics.Play_count) + `</h4>
-										
-									</div>
-								</div>
-							</div>`)
+			finalString += CreateUser(users.Users[i])
 		}
 	}
 	finalString += "</div>"
@@ -199,20 +152,28 @@ func CreateOptions(user player.User) string {
 						<div class="user-settings">
 							<div class="player-info">
 								<p>Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
+								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
-								<input type="checkbox" id="bg"><label>Background Image On/Off</label>
+								<select id="bg">
+									<option value="` + user.Background + `" selected hidden>` + user.Background + `</option>
+									<option value="true">true</option>
+									<option value="false">false</option>
+								</select>
+								<label>Background Image On/Off</label>
 								<br>
 								<br>
 								<select id="mode">
+									<option value="` + user.Playmode + `" selected hidden>` + user.Playmode + `</option>
 									<option value="osu">osu</option>
 									<option value="mania">mania</option>
 									<option value="taiko">taiko</option>
-									<option value="fruits">ctb</option>
+									<option value="fruits">fruits</option>
 								</select>
 								<label>Gamemode Preference</label>
 								<br>
 								<br>
 								<select id="state">
+									<option value="` + user.State + `" selected hidden>` + user.State + `</option>
 									<option value="Alabama">Alabama</option>
 									<option value="Alaska">Alaska</option>
 									<option value="Arizona">Arizona</option>
@@ -268,7 +229,8 @@ func CreateOptions(user player.User) string {
 								<br>
 								<br>
 					
-							<button id="submit">Submit</button>
+							<button id="update">Submit</button>
+							<div id="response"></div>
 							</div>
 						</div>`)
 	return finalString
@@ -278,17 +240,17 @@ func CreateUser(user player.User) string {
 	finalString := (`<div class="players-container">
 						<div class="player">
 							<div class="player-preview">
-								<h4>#X</h4>
+								<h4>#` + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>
 								<image class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
 							</div>
-							<div class="player-info" style="background-image: url('` + user.CoverURL + `');">
+							<div class="player-info" style="background-image: url('` + GetBackground(user) + `');">
 								<div class="progress-container">
 									<span class="progress-text">
 										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
 										<h5>Discord: ` + user.Discord + `</h5>
 									</span>
 								</div>
-								<h6>` + "tempstate" + `</h6>
+								<h6>` + user.State + `</h6>
 								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
 								<h4>Total PP: ` + FloatToString(user.Statistics.Pp) + `</h4>
 								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
@@ -299,4 +261,12 @@ func CreateUser(user player.User) string {
 					</div>
 				</div>`)
 	return finalString
+}
+
+func GetBackground(user player.User) string {
+	if user.Background == "true" {
+		return user.CoverURL
+	}
+
+	return ""
 }

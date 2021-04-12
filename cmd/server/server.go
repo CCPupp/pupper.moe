@@ -39,13 +39,22 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/update", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			http.Error(w, fmt.Sprintf("error parsing url %v", err), 500)
 		}
-		//state := r.FormValue("state")
-		//player.AddUserState(state, user)
+		state := r.FormValue("state")
+		bg := r.FormValue("bg")
+		mode := r.FormValue("mode")
+		id := r.FormValue("id")
+		if bg == "true" || bg == "false" {
+			player.SetUserBg(bg, id)
+		}
+		player.SetUserState(state, id)
+		player.SetUserMode(mode, id)
+
+		fmt.Fprintf(w, "<h2>Update Successful!</h2>")
 	})
 
 	//Serves local webpage for testing
@@ -55,7 +64,7 @@ func main() {
 			log.Fatal("Web server (HTTP): ", errhttp)
 		}
 	} else {
-		//Serves the webpage
+		//Serves the webpage to the internet
 		errhttps := http.ListenAndServeTLS(":443", "certs/cert.pem", "certs/key.pem", nil)
 		if errhttps != nil {
 			log.Fatal("Web server (HTTPS): ", errhttps)
@@ -67,11 +76,15 @@ func user(w http.ResponseWriter, r *http.Request) string {
 	token := api.GetToken(r.URL.Query().Get("code"))
 	id := api.GetMe("osu", w, r, token)
 	user := api.GetUser(strconv.Itoa(id.ID), "osu", w, r, token)
-	player.WriteToUser(user)
+	if player.CheckDuplicate(user.ID) {
+		player.OverwriteExisting(player.RetrieveUser(user.ID), user)
+	} else {
+		player.WriteToUser(player.RetrieveUser(user.ID))
+	}
 	finalString := htmlbuilder.BuildHTMLHeader()
 	finalString += htmlbuilder.BuildHTMLNavbar()
-	finalString += htmlbuilder.CreateUser(user)
-	finalString += htmlbuilder.CreateOptions(user)
+	finalString += htmlbuilder.CreateUser(player.RetrieveUser(user.ID))
+	finalString += htmlbuilder.CreateOptions(player.RetrieveUser(user.ID))
 	finalString += htmlbuilder.BuildHTMLFooter()
 	return finalString
 }

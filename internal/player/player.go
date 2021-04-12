@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strconv"
 )
 
 // Player stores information about the player to parse onto the webpage
@@ -20,7 +21,10 @@ type User struct {
 	CountryCode    string    `json:"country_code"`
 	Playmode       string    `json:"playmode"`
 	ReplaysWatched int       `json:"replays_watched_by_others"`
-	State          string    `json:"state"`
+	// These items are not pulled from the osu!api and instead are stored locally.
+	State      string    `json:"state"`
+	Background string    `json:"background"`
+	Locks      Lock_info `json:"locks"`
 }
 
 type Statistic struct {
@@ -34,6 +38,11 @@ type Statistic struct {
 type Level_info struct {
 	Current  int `json:"current"`
 	Progress int `json:"progress"`
+}
+
+type Lock_info struct {
+	Mode_Lock  bool `json:"modelock"`
+	State_Lock bool `json:"statelock"`
 }
 
 type Users struct {
@@ -65,15 +74,7 @@ func SortUsers(list Users) Users {
 }
 
 func CheckDuplicate(dupe int) bool {
-	jsonFile, err := os.Open("web/data/users.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var currentList Users
-	json.Unmarshal(byteValue, &currentList)
+	currentList := GetUserJSON()
 
 	for i := 0; i < len(currentList.Users); i++ {
 		if currentList.Users[i].ID == dupe {
@@ -84,59 +85,52 @@ func CheckDuplicate(dupe int) bool {
 	return false
 }
 
-func AddUserState(state string, user User) {
-	jsonFile, err := os.Open("web/data/users.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var currentList Users
-	json.Unmarshal(byteValue, &currentList)
+func SetUserState(state string, id string) {
+	currentList := GetUserJSON()
 
 	for i := 0; i < len(currentList.Users); i++ {
-		if currentList.Users[i].ID == user.ID {
-			level := Level_info{
-				Current:  user.Statistics.Level.Current,
-				Progress: user.Statistics.Level.Progress,
-			}
-
-			stats := Statistic{
-				Pp:          user.Statistics.Pp,
-				Global_rank: user.Statistics.Global_rank,
-				Accuracy:    user.Statistics.Accuracy,
-				Play_count:  user.Statistics.Play_count,
-				Level:       level,
-			}
-
-			currentList.Users = append(currentList.Users, User{
-				ID:             user.ID,
-				Username:       user.Username,
-				State:          user.State,
-				CountryCode:    user.CountryCode,
-				CoverURL:       user.CoverURL,
-				Playmode:       user.Playmode,
-				ProfileColor:   user.ProfileColor,
-				AvatarURL:      user.AvatarURL,
-				Discord:        user.Discord,
-				ReplaysWatched: user.ReplaysWatched,
-				Statistics:     stats,
-			})
+		if strconv.Itoa(currentList.Users[i].ID) == id {
+			currentList.Users[i].State = state
+			currentList.Users[i].Locks.State_Lock = true
 		}
 	}
+
+	finalList, _ := json.Marshal(currentList)
+
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
+}
+
+func SetUserBg(bg string, id string) {
+	currentList := GetUserJSON()
+
+	for i := 0; i < len(currentList.Users); i++ {
+		if strconv.Itoa(currentList.Users[i].ID) == id {
+			currentList.Users[i].Background = bg
+		}
+	}
+
+	finalList, _ := json.Marshal(currentList)
+
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
+}
+
+func SetUserMode(mode string, id string) {
+	currentList := GetUserJSON()
+
+	for i := 0; i < len(currentList.Users); i++ {
+		if strconv.Itoa(currentList.Users[i].ID) == id {
+			currentList.Users[i].Playmode = mode
+			currentList.Users[i].Locks.Mode_Lock = true
+		}
+	}
+
+	finalList, _ := json.Marshal(currentList)
+
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
 }
 
 func WriteToUser(newUser User) {
-	jsonFile, err := os.Open("web/data/users.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var currentList Users
-	json.Unmarshal(byteValue, &currentList)
+	currentList := GetUserJSON()
 
 	level := Level_info{
 		Current:  newUser.Statistics.Level.Current,
@@ -154,7 +148,6 @@ func WriteToUser(newUser User) {
 	currentList.Users = append(currentList.Users, User{
 		ID:             newUser.ID,
 		Username:       newUser.Username,
-		State:          newUser.State,
 		CountryCode:    newUser.CountryCode,
 		CoverURL:       newUser.CoverURL,
 		Playmode:       newUser.Playmode,
@@ -163,56 +156,63 @@ func WriteToUser(newUser User) {
 		Discord:        newUser.Discord,
 		ReplaysWatched: newUser.ReplaysWatched,
 		Statistics:     stats,
+		State:          newUser.State,
+		Background:     newUser.Background,
+		Locks:          newUser.Locks,
 	})
 
 	finalList, _ := json.Marshal(currentList)
 
-	err = ioutil.WriteFile("web/data/users.json", finalList, 0644)
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
 }
 
-func OverwriteExisting(existingUser User) {
-	// Open our jsonFile
-	jsonFile, err := os.Open("web/data/users.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+func OverwriteExisting(existingUser User, pulledUser User) {
+	currentList := GetUserJSON()
 
-	var currentList Users
-	json.Unmarshal(byteValue, &currentList)
-	// TODO: FIX THIS
+	level := Level_info{
+		Current:  pulledUser.Statistics.Level.Current,
+		Progress: pulledUser.Statistics.Level.Progress,
+	}
+
+	stats := Statistic{
+		Pp:          pulledUser.Statistics.Pp,
+		Global_rank: pulledUser.Statistics.Global_rank,
+		Accuracy:    pulledUser.Statistics.Accuracy,
+		Play_count:  pulledUser.Statistics.Play_count,
+		Level:       level,
+	}
+
+	user := User{
+		ID:             existingUser.ID,
+		Username:       pulledUser.Username,
+		CountryCode:    pulledUser.CountryCode,
+		CoverURL:       pulledUser.CoverURL,
+		Playmode:       existingUser.Playmode,
+		ProfileColor:   pulledUser.ProfileColor,
+		AvatarURL:      pulledUser.AvatarURL,
+		Discord:        pulledUser.Discord,
+		ReplaysWatched: pulledUser.ReplaysWatched,
+		Statistics:     stats,
+		State:          existingUser.State,
+		Background:     existingUser.Background,
+		Locks:          existingUser.Locks,
+	}
+
 	for i := 0; i < len(currentList.Users); i++ {
 		if currentList.Users[i].ID == existingUser.ID {
+			currentList.Users[i] = user
 		}
 	}
 
 	// now Marshal it
 	finalList, _ := json.Marshal(currentList)
 
-	err = ioutil.WriteFile("web/data/users.json", finalList, 0644)
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
 }
 
 func RetrieveUser(id int) User {
-	jsonFile, err := os.Open("web/data/users.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	// we initialize our Players array
-	var users Users
+	users := GetUserJSON()
 	var user User
-
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'players' which we defined above
-	json.Unmarshal(byteValue, &users)
 	for i := 0; i < len(users.Users); i++ {
 		if users.Users[i].ID == id {
 			user = users.Users[i]
@@ -220,4 +220,19 @@ func RetrieveUser(id int) User {
 	}
 
 	return user
+}
+
+func GetUserStateRank(id int, state string) int {
+	users := SortUsers(GetUserJSON())
+	rank := 0
+	for i := 0; i < len(users.Users); i++ {
+		if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) {
+			rank++
+			if users.Users[i].ID == id {
+				return rank
+			}
+		}
+	}
+
+	return 0
 }
