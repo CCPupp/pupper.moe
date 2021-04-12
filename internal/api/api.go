@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -48,8 +47,6 @@ func GetUser(id string, gamemode string, w http.ResponseWriter, r *http.Request,
 		log.Fatal(getErr)
 	}
 
-	fmt.Println(res)
-
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
@@ -64,7 +61,7 @@ func GetUser(id string, gamemode string, w http.ResponseWriter, r *http.Request,
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
-
+	log.Print("User: " + user.Username)
 	return user
 }
 
@@ -88,8 +85,6 @@ func GetMe(gamemode string, w http.ResponseWriter, r *http.Request, token string
 	if getErr != nil {
 		log.Fatal(getErr)
 	}
-
-	fmt.Println(res)
 
 	if res.Body != nil {
 		defer res.Body.Close()
