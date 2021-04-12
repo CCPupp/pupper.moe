@@ -31,7 +31,7 @@ func main() {
 		} else if r.URL.Path[1:5] == "user" {
 			fmt.Fprintf(w, user(w, r))
 		} else if r.URL.Path[1:6] == "login" {
-			http.Redirect(w, r, "https://osu.ppy.sh/oauth/authorize?response_type=code&client_id="+secret.OSU_CLIENT_ID+"&redirect_uri="+secret.REDIRECT_URL+"/user&scope=public", http.StatusSeeOther)
+			http.Redirect(w, r, "https://osu.ppy.sh/oauth/authorize?response_type=code&client_id="+strconv.Itoa(secret.OSU_CLIENT_ID)+"&redirect_uri="+secret.REDIRECT_URL+"/user&scope=public", http.StatusSeeOther)
 		} else if r.URL.Path[1:7] == "states" {
 			fmt.Fprintf(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:]))
 		} else {
