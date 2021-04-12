@@ -48,13 +48,18 @@ func main() {
 		bg := r.FormValue("bg")
 		mode := r.FormValue("mode")
 		id := r.FormValue("id")
-		if bg == "true" || bg == "false" {
-			player.SetUserBg(bg, id)
-		}
-		player.SetUserState(state, id)
-		player.SetUserMode(mode, id)
+		if id != "0" {
+			if bg == "true" || bg == "false" {
+				player.SetUserBg(bg, id)
+			}
+			player.SetUserState(state, id)
+			player.SetUserMode(mode, id)
 
-		fmt.Fprintf(w, "<h2>Update Successful!</h2>")
+			fmt.Fprintf(w, "<h2>Success!</h2>")
+		} else {
+			fmt.Fprintf(w, "<h2>Submission Failed.</h2>")
+		}
+
 	})
 
 	//Serves local webpage for testing
@@ -79,7 +84,7 @@ func user(w http.ResponseWriter, r *http.Request) string {
 	if player.CheckDuplicate(user.ID) {
 		player.OverwriteExisting(player.RetrieveUser(user.ID), user)
 	} else {
-		player.WriteToUser(player.RetrieveUser(user.ID))
+		player.WriteToUser(user)
 	}
 	finalString := htmlbuilder.BuildHTMLHeader()
 	finalString += htmlbuilder.BuildHTMLNavbar()

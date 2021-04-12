@@ -17,7 +17,7 @@ func BuildHTMLHeader() string {
 	<title>State Ranking Leaderboard</title>
 	<meta charset="UTF-8" />
 	<link rel="preconnect" href="https://fonts.gstatic.com">
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet"> 
+	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
 	<link rel="icon" href="../web/media/favicon.png" type="image/x-icon"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="stylesheet" type="text/css" href="../web/css/main.css" />
@@ -64,12 +64,12 @@ func CreateAllHTML() string {
 	finalString += `
 	<br>
 	<br>
-	<div class='flex-container'>
+	<div class='flex-container black-font'>
 	<ol>
 	<b>Total Users: ` + strconv.Itoa(len(users.Users)) + `</b><br><br>`
 
 	for i := len(users.Users) - 1; i >= 0; i-- {
-		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='/states/" + users.Users[i].State + "' class='usercard'>" + users.Users[i].Username + "</a>")
+		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='/states/" + users.Users[i].State + "' class='usercard black-font'>" + users.Users[i].Username + "</a>")
 		finalString += ("<b>State: " + users.Users[i].State + "</b></div></li>")
 	}
 
@@ -91,7 +91,7 @@ func CreateAllHTML() string {
 	finalString += `</ol><ol>`
 
 	for i := 0; i < len(discords.Discords); i++ {
-		finalString += `<a href=` + discords.Discords[i].Link + `> ` + discords.Discords[i].State + `'s Discord Server </a><br><br>`
+		finalString += `<a class="black-font" href=` + discords.Discords[i].Link + `> ` + discords.Discords[i].State + `'s Discord Server </a><br><br>`
 	}
 
 	finalString += `</div></body>`
@@ -147,17 +147,24 @@ func FloatToString(input_num float64) string {
 	return strconv.FormatFloat(input_num, 'f', 2, 64)
 }
 
+func GetBackgroundText(bg player.User) string {
+	if bg.Background == "true" {
+		return "On"
+	}
+	return "Off"
+}
+
 func CreateOptions(user player.User) string {
-	finalString := (`<div class="players-container">
+	finalString := (`<div class="player-container black-font">
 						<div class="user-settings">
-							<div class="player-info">
+							<div class="settings-info">
 								<p>Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
 								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
 								<select id="bg">
-									<option value="` + user.Background + `" selected hidden>` + user.Background + `</option>
-									<option value="true">true</option>
-									<option value="false">false</option>
+									<option value="` + user.Background + `" selected hidden>` + GetBackgroundText(user) + `</option>
+									<option value="true">On</option>
+									<option value="false">Off</option>
 								</select>
 								<label>Background Image On/Off</label>
 								<br>
@@ -243,7 +250,7 @@ func CreateUser(user player.User) string {
 								<h4>#` + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>
 								<image class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
 							</div>
-							<div class="player-info" style="background-image: url('` + GetBackground(user) + `');">
+							<div class="player-info" style="` + GetBackground(user) + `">
 								<div class="progress-container">
 									<span class="progress-text">
 										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
@@ -265,7 +272,7 @@ func CreateUser(user player.User) string {
 
 func GetBackground(user player.User) string {
 	if user.Background == "true" {
-		return user.CoverURL
+		return `background-image: url('` + user.CoverURL + `'); `
 	}
 
 	return ""

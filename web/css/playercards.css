@@ -6,7 +6,9 @@
 
 
 body {
-	font-family: 'Muli', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
+	color: white;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -25,6 +27,14 @@ body {
 	overflow: hidden;
 	width: 900px;
 	height: 500px;
+}
+
+.settings-info {
+	padding: 10px;
+	position: relative;
+	width: 100%;
+	background-size: 100%;
+	background-image: none;
 }
 
 .player {
@@ -82,8 +92,12 @@ body {
 	position: relative;
 	width: 100%;
 	background-size: 100%;
+	background-image: url(/web/media/default-bg.jpg);
 }
 
+.player-info a {
+	color: white;
+}
 
 .progress-container {
 	position: absolute;
