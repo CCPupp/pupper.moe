@@ -49,6 +49,20 @@ type Users struct {
 	Users []User `json:"users"`
 }
 
+func GetUserById(id int) User {
+	users := GetUserJSON()
+
+	for i := 0; i < len(users.Users); i++ {
+		if users.Users[i].ID == id {
+			return users.Users[i]
+		}
+	}
+
+	var nullUser User
+	return nullUser
+
+}
+
 func GetUserJSON() Users {
 	jsonFile, err := os.Open("web/data/users.json")
 	if err != nil {
@@ -187,7 +201,7 @@ func OverwriteExisting(existingUser User, pulledUser User) {
 		Username:       pulledUser.Username,
 		CountryCode:    pulledUser.CountryCode,
 		CoverURL:       pulledUser.CoverURL,
-		Playmode:       existingUser.Playmode,
+		Playmode:       pulledUser.Playmode,
 		ProfileColor:   pulledUser.ProfileColor,
 		AvatarURL:      pulledUser.AvatarURL,
 		Discord:        pulledUser.Discord,

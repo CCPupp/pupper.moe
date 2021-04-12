@@ -29,7 +29,7 @@ type Token struct {
 }
 
 func GetUser(id string, gamemode string, w http.ResponseWriter, r *http.Request, token string) player.User {
-	url := "https://osu.ppy.sh/api/v2/users/" + id + "/" + gamemode
+	url := "https://osu.ppy.sh/api/v2/users/" + id
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)

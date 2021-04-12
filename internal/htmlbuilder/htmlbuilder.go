@@ -169,7 +169,7 @@ func CreateOptions(user player.User) string {
 								<label>Background Image On/Off</label>
 								<br>
 								<br>
-								<select id="mode">
+								<select id="mode" disabled>
 									<option value="` + user.Playmode + `" selected hidden>` + user.Playmode + `</option>
 									<option value="osu">osu</option>
 									<option value="mania">mania</option>
@@ -237,14 +237,13 @@ func CreateOptions(user player.User) string {
 								<br>
 					
 							<button id="update">Submit</button>
-							<div id="response"></div>
 							</div>
 						</div>`)
 	return finalString
 }
 
 func CreateUser(user player.User) string {
-	finalString := (`<div class="players-container">
+	finalString := (`<div class="players-container" id="response">
 						<div class="player">
 							<div class="player-preview">
 								<h4>#` + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>
@@ -253,6 +252,7 @@ func CreateUser(user player.User) string {
 							<div class="player-info" style="` + GetBackground(user) + `">
 								<div class="progress-container">
 									<span class="progress-text">
+										<h5>Mode: ` + user.Playmode + `</h5>
 										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
 										<h5>Discord: ` + user.Discord + `</h5>
 									</span>

@@ -46,16 +46,17 @@ func main() {
 		}
 		state := r.FormValue("state")
 		bg := r.FormValue("bg")
-		mode := r.FormValue("mode")
+		//mode := r.FormValue("mode")
 		id := r.FormValue("id")
 		if id != "0" {
 			if bg == "true" || bg == "false" {
 				player.SetUserBg(bg, id)
 			}
 			player.SetUserState(state, id)
-			player.SetUserMode(mode, id)
-
-			fmt.Fprintf(w, "<h2>Success!</h2>")
+			//player.SetUserMode(mode, id)
+			idInt, _ := strconv.Atoi(id)
+			user := player.GetUserById(idInt)
+			fmt.Fprintf(w, (htmlbuilder.CreateUser(user)))
 		} else {
 			fmt.Fprintf(w, "<h2>Submission Failed.</h2>")
 		}
