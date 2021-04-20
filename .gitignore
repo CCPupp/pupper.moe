@@ -2,4 +2,6 @@ web/data/discords.json
 web/data/players.json
 web/data/users.json
 converter.go
-secret.go
+go.sum
+go.mod
+.DS_Store
