@@ -235,10 +235,7 @@ func CreateOptions(user player.User) string {
 								<label>State Selection</label>
 								<br>
 								<br>
-							<form action="/login">
 								<button id="update">Submit</button>
-							    <input type="submit" value="Refresh" />
-							</form>
 							</div>
 						</div>`)
 	return finalString
