@@ -37,7 +37,7 @@ func BuildHTMLHeader() string {
 
 func BuildHTMLFooter() string {
 	var finalFooter string = `
-	<script src="../web/scripts/localstorage.js"></script>
+	
 	</html>`
 	return finalFooter
 }
@@ -48,7 +48,6 @@ func BuildHTMLNavbar() string {
         <a href="/">Home</a>
         <a href="/all">All Users / Discords</a>
         <a href="https://twitter.com/ponparpanpor">Contact</a>
-        <a href="/login">Customize My Card</a>
     </div>
 	<br>
 	<br>
@@ -273,6 +272,5 @@ func GetBackground(user player.User) string {
 	if user.Background == "true" {
 		return `background-image: url('` + user.CoverURL + `'); `
 	}
-
 	return ""
 }

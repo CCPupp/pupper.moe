@@ -128,3 +128,18 @@ body {
 	letter-spacing: 1px;
 }
 
+.players-container {
+	max-width: 80vw;
+	justify-self: center;
+}
+
+@media only screen and (max-width: 600px) {
+	.player-preview {
+		background-color:#9579d1;
+		color: #fff;
+		padding-top: 10px;
+		padding-left: 20px;
+		padding-right: 20px;
+		max-width: 150px;
+	}
+}

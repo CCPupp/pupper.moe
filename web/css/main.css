@@ -170,3 +170,61 @@ ol {
 	text-shadow: none !important;
 	color: black !important;
 }
+
+@media only screen and (max-width: 600px) {
+
+    .btn {
+        text-shadow: none;
+        background-color:#9579d1;
+        border: 0;
+        border-radius: 50px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        color: black !important;
+        font-size: 20px;
+        padding: 12px 25px;
+        position: fixed;
+        bottom: 15px;
+        right: 30px;
+        letter-spacing: 1px;
+    }
+    
+    .btn:hover {
+        background-color:#be9ddf;
+    }
+    
+    .btn-above {
+        text-shadow: none;
+        background-color:#9579d1;
+        border: 0;
+        border-radius: 50px;
+        box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+        color: black;
+        font-size: 20px;
+        padding: 12px 25px;
+        position: fixed;
+        bottom: 70px;
+        right: 30px;
+        letter-spacing: 1px;
+    }
+
+    .btn-above:hover {
+        background-color:#be9ddf;
+    }
+    
+    .black-font {
+        text-shadow: none !important;
+        color: black !important;
+    }
+
+    a{
+        text-decoration: none;
+        color: white;
+        font-weight: normal;
+        font-size: 130%;
+    }
+    
+    a:visited {
+        text-decoration: none;
+        color: white;
+    }
+}
