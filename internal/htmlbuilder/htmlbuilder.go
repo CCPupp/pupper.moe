@@ -249,7 +249,7 @@ func CreateUser(user player.User) string {
 							</div>
 							<div class="player-info" style="` + GetBackground(user) + `">
 								<div class="progress-container">
-									<span class="progress-text">
+									<span class="progress-text hide-on-mobile">
 										<h5>Mode: ` + user.Playmode + `</h5>
 										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
 										<h5>Discord: ` + user.Discord + `</h5>

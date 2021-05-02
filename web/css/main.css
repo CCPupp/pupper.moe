@@ -227,4 +227,8 @@ ol {
         text-decoration: none;
         color: white;
     }
+
+    .hide-on-mobile {
+        display: none;
+    }
 }
