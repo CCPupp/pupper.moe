@@ -37,6 +37,10 @@ body {
 	background-image: none;
 }
 
+.settings-container {
+	max-width: 80vw;
+}
+
 .player {
 	background-color: rgb(236, 236, 236);
 	border-radius: 10px;

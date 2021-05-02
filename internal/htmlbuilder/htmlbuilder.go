@@ -154,7 +154,7 @@ func GetBackgroundText(bg player.User) string {
 }
 
 func CreateOptions(user player.User) string {
-	finalString := (`<div class="player-container black-font">
+	finalString := (`<div class="settings-container player-container black-font">
 						<div class="user-settings">
 							<div class="settings-info">
 								<p>Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
