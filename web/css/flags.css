@@ -1,3 +1,6 @@
+
+@media only screen and (min-width: 600px) {
+
 li .ak {
     background-image: url(/web/media/ak.png);
     background-size: 3.4rem;
@@ -396,4 +399,4 @@ li .wy {
     background-repeat: no-repeat;
     padding: 0rem 0 1rem 5rem;
     margin-bottom: 2rem;
-}
+}}

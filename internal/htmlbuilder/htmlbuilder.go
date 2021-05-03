@@ -37,7 +37,7 @@ func BuildHTMLHeader() string {
 
 func BuildHTMLFooter() string {
 	var finalFooter string = `
-	<script src="../web/scripts/localstorage.js"></script>
+	
 	</html>`
 	return finalFooter
 }
@@ -48,7 +48,6 @@ func BuildHTMLNavbar() string {
         <a href="/">Home</a>
         <a href="/all">All Users / Discords</a>
         <a href="https://twitter.com/ponparpanpor">Contact</a>
-        <a href="/login">Customize My Card</a>
     </div>
 	<br>
 	<br>
@@ -155,7 +154,7 @@ func GetBackgroundText(bg player.User) string {
 }
 
 func CreateOptions(user player.User) string {
-	finalString := (`<div class="player-container black-font">
+	finalString := (`<div class="settings-container player-container black-font">
 						<div class="user-settings">
 							<div class="settings-info">
 								<p>Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
@@ -250,7 +249,7 @@ func CreateUser(user player.User) string {
 							</div>
 							<div class="player-info" style="` + GetBackground(user) + `">
 								<div class="progress-container">
-									<span class="progress-text">
+									<span class="progress-text hide-on-mobile">
 										<h5>Mode: ` + user.Playmode + `</h5>
 										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
 										<h5>Discord: ` + user.Discord + `</h5>
@@ -273,6 +272,5 @@ func GetBackground(user player.User) string {
 	if user.Background == "true" {
 		return `background-image: url('` + user.CoverURL + `'); `
 	}
-
 	return ""
 }
