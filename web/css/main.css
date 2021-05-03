@@ -102,6 +102,7 @@ ol {
 
 .statelist {
     min-width: 25%;
+    padding-bottom:20%;
 }
 
 .statelist ul li a {
@@ -230,5 +231,16 @@ ol {
 
     .hide-on-mobile {
         display: none;
+    }
+
+    .statelist {
+        padding-top: 15%;
+    }
+}
+
+@media only screen and (max-width: 406px) {
+    .statelist {
+        padding-top: 25%;
+        padding-bottom: 20%;
     }
 }
