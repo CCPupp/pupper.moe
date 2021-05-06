@@ -12,12 +12,19 @@ import (
 	"github.com/CCPupp/pupper.moe/internal/player"
 )
 
-type Request struct {
+type UserRequest struct {
 	Grant_type    string `json:"grant_type"`
 	Client_id     int    `json:"client_id"`
 	Client_secret string `json:"client_secret"`
 	Redirect_uri  string `json:"redirect_uri"`
 	Code          string `json:"code"`
+}
+
+type ClientRequest struct {
+	Grant_type    string `json:"grant_type"`
+	Client_id     int    `json:"client_id"`
+	Client_secret string `json:"client_secret"`
+	Scope         string `json:"scope"`
 }
 
 type Token struct {
@@ -27,7 +34,7 @@ type Token struct {
 	Refresh_token string `json:"refresh_token"`
 }
 
-func GetUser(id string, gamemode string, w http.ResponseWriter, r *http.Request, token string) player.User {
+func GetUser(id string, token string) player.User {
 	url := "https://osu.ppy.sh/api/v2/users/" + id
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -35,7 +42,7 @@ func GetUser(id string, gamemode string, w http.ResponseWriter, r *http.Request,
 	}
 
 	osuClient := http.Client{
-		Timeout: time.Second * 2, // Timeout after 2 seconds
+		Timeout: time.Second * 5, // Timeout after 5 seconds
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
@@ -104,13 +111,49 @@ func GetMe(gamemode string, w http.ResponseWriter, r *http.Request, token string
 	return user
 }
 
-func GetToken(key string) string {
+func GetUserToken(key string) string {
 	url := "https://osu.ppy.sh/oauth/token"
-	var jsonStr, _ = json.Marshal(Request{Grant_type: "authorization_code",
+	var jsonStr, _ = json.Marshal(UserRequest{
+		Grant_type:    "authorization_code",
 		Client_id:     secret.OSU_CLIENT_ID,
 		Client_secret: secret.OSU_CLIENT_SECRET,
 		Redirect_uri:  secret.REDIRECT_URL + "/user",
 		Code:          key})
+	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonStr))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+
+	client := &http.Client{}
+	res, getErr := client.Do(req)
+	if getErr != nil {
+		log.Fatal(getErr)
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	var token Token
+	jsonErr := json.Unmarshal(body, &token)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+
+	return token.Access_token
+}
+
+func GetClientToken() string {
+	url := "https://osu.ppy.sh/oauth/token"
+	var jsonStr, _ = json.Marshal(ClientRequest{
+		Client_id:     secret.OSU_CLIENT_ID,
+		Client_secret: secret.OSU_CLIENT_SECRET,
+		Grant_type:    "client_credentials",
+		Scope:         "public"})
 	req, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonStr))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")

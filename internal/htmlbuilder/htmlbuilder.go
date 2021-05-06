@@ -269,7 +269,7 @@ func CreateUser(user player.User) string {
 }
 
 func GetBackground(user player.User) string {
-	if user.Background == "true" {
+	if user.Background == "true" || user.Background == "" {
 		return `background-image: url('` + user.CoverURL + `'); `
 	}
 	return ""

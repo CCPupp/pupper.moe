@@ -12,13 +12,14 @@ import (
 	"github.com/CCPupp/pupper.moe/internal/api"
 	"github.com/CCPupp/pupper.moe/internal/htmlbuilder"
 	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/pupper.moe/internal/updater"
 	"github.com/CCPupp/pupper.moe/internal/validations"
 
 	_ "github.com/bmizerany/pq"
 )
 
 func main() {
-
+	go updater.StartUpdate()
 	// Handler points to available directories
 	http.Handle("/web/html", http.StripPrefix("/web/html", http.FileServer(http.Dir("web/html"))))
 	http.Handle("/web/scripts/", http.StripPrefix("/web/scripts/", http.FileServer(http.Dir("web/scripts"))))
@@ -86,9 +87,9 @@ func main() {
 }
 
 func user(w http.ResponseWriter, r *http.Request) string {
-	token := api.GetToken(r.URL.Query().Get("code"))
+	token := api.GetUserToken(r.URL.Query().Get("code"))
 	id := api.GetMe("osu", w, r, token)
-	user := api.GetUser(strconv.Itoa(id.ID), "osu", w, r, token)
+	user := api.GetUser(strconv.Itoa(id.ID), token)
 	if player.CheckDuplicate(user.ID) {
 		player.OverwriteExisting(player.RetrieveUser(user.ID), user)
 	} else {
