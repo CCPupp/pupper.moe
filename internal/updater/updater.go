@@ -25,7 +25,7 @@ func doUpdate() {
 	clientToken := api.GetClientToken()
 	users := player.GetUserJSON()
 	for i := 0; i < len(users.Users); i++ {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(150 * time.Millisecond)
 		updateUser(users, i, clientToken)
 	}
 	IsUpdating = false
