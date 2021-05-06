@@ -95,7 +95,7 @@ body {
 	padding: 10px;
 	position: relative;
 	width: 100%;
-	background-size: 100%;
+	background-size: cover;
 	background-image: url(/web/media/default-bg.jpg);
 }
 

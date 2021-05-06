@@ -19,7 +19,9 @@ import (
 )
 
 func main() {
-	go updater.StartUpdate()
+	if !secret.IS_TESTING {
+		go updater.StartUpdate()
+	}
 	// Handler points to available directories
 	http.Handle("/web/html", http.StripPrefix("/web/html", http.FileServer(http.Dir("web/html"))))
 	http.Handle("/web/scripts/", http.StripPrefix("/web/scripts/", http.FileServer(http.Dir("web/scripts"))))
