@@ -31,14 +31,24 @@ func main() {
 		if r.URL.Path[1:] == "" {
 			http.ServeFile(w, r, "web/html/index.html")
 		} else if r.URL.Path[1:4] == "all" {
-			fmt.Fprint(w, htmlbuilder.CreateAllHTML())
+			fmt.Fprint(w, htmlbuilder.CreateAllHTML(1))
 		} else if r.URL.Path[1:5] == "user" {
 			fmt.Fprint(w, user(w, r))
 		} else if r.URL.Path[1:6] == "login" {
 			http.Redirect(w, r, "https://osu.ppy.sh/oauth/authorize?response_type=code&client_id="+strconv.Itoa(secret.OSU_CLIENT_ID)+"&redirect_uri="+secret.REDIRECT_URL+"/user&scope=public", http.StatusSeeOther)
 		} else if r.URL.Path[1:7] == "states" {
 			if r.URL.Path[8:] != "" {
-				fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:]))
+				if r.URL.Path[len(r.URL.Path)-3:] == "osu" {
+					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-4], "osu", 2))
+				} else if r.URL.Path[len(r.URL.Path)-5:] == "mania" {
+					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-6], "mania", 2))
+				} else if r.URL.Path[len(r.URL.Path)-5:] == "catch" {
+					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-6], "fruits", 2))
+				} else if r.URL.Path[len(r.URL.Path)-5:] == "taiko" {
+					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-6], "taiko", 2))
+				} else {
+					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:], "all", 1))
+				}
 			}
 		} else {
 			http.ServeFile(w, r, "web/html/"+r.URL.Path[1:]+".html")
@@ -66,7 +76,7 @@ func main() {
 			//player.SetUserMode(mode, id)
 			idInt, _ := strconv.Atoi(id)
 			user := player.GetUserById(idInt)
-			fmt.Fprint(w, (htmlbuilder.CreateUser(user)))
+			fmt.Fprint(w, (htmlbuilder.CreateUser(user, 0)))
 		} else {
 			fmt.Fprint(w, "<h2>Submission Failed.</h2>")
 		}
@@ -122,9 +132,9 @@ func user(w http.ResponseWriter, r *http.Request) string {
 	} else {
 		player.WriteToUser(user)
 	}
-	finalString := htmlbuilder.BuildHTMLHeader()
+	finalString := htmlbuilder.BuildHTMLHeader(1)
 	finalString += htmlbuilder.BuildHTMLNavbar()
-	finalString += htmlbuilder.CreateUser(player.RetrieveUser(user.ID))
+	finalString += htmlbuilder.CreateUser(player.RetrieveUser(user.ID), 0)
 	finalString += htmlbuilder.CreateOptions(player.RetrieveUser(user.ID))
 	finalString += htmlbuilder.BuildHTMLFooter()
 	return finalString

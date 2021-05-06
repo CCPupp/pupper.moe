@@ -6,24 +6,27 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/CCPupp/pupper.moe/internal/discord"
 	"github.com/CCPupp/pupper.moe/internal/player"
 )
 
-func BuildHTMLHeader() string {
+func BuildHTMLHeader(loop int) string {
+	backString := "../"
+	finalBack := strings.Repeat(backString, loop)
 	var finalHeader string = `<!DOCTYPE html>
 	<html>
 	<title>State Ranking Leaderboard</title>
 	<meta charset="UTF-8" />
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
-	<link rel="icon" href="../web/media/favicon.png" type="image/x-icon"/>
+	<link rel="icon" href="` + finalBack + `web/media/favicon.png" type="image/x-icon"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet" type="text/css" href="../web/css/main.css" />
-	<link rel="stylesheet" type="text/css" href="../web/css/flexbox.css" />
-	<link rel="stylesheet" type="text/css" href="../web/css/normalize.css" />
-	<link rel="stylesheet" type="text/css" href="../web/css/playercards.css" />
+	<link rel="stylesheet" type="text/css" href="` + finalBack + `web/css/main.css" />
+	<link rel="stylesheet" type="text/css" href="` + finalBack + `web/css/flexbox.css" />
+	<link rel="stylesheet" type="text/css" href="` + finalBack + `web/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="` + finalBack + `web/css/playercards.css" />
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="State Leaderboard" />
 	<meta property="og:description" content="A leaderboard for osu players split into each state" />
@@ -31,7 +34,7 @@ func BuildHTMLHeader() string {
 	<meta property="og:image" content="full thumbnail path" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script src="../web/scripts/main.js"></script>`
+	<script src="` + finalBack + `web/scripts/main.js"></script>`
 	return finalHeader
 }
 
@@ -55,10 +58,10 @@ func BuildHTMLNavbar() string {
 	return finalString
 }
 
-func CreateAllHTML() string {
+func CreateAllHTML(loop int) string {
 	users := player.GetUserJSON()
 
-	finalString := BuildHTMLHeader()
+	finalString := BuildHTMLHeader(loop)
 	finalString += BuildHTMLNavbar()
 	finalString += `
 	<br>
@@ -99,7 +102,7 @@ func CreateAllHTML() string {
 	return finalString
 }
 
-func CreateStateHTML(state string) string {
+func CreateStateHTML(state, mode string, loop int) string {
 	discords := discord.GetDiscordJSON()
 	discordString := ""
 	for i := 0; i < len(discords.Discords); i++ {
@@ -107,7 +110,7 @@ func CreateStateHTML(state string) string {
 			discordString += `<a href="` + discords.Discords[i].Link + `"> Discord Server </a>`
 		}
 	}
-	var finalString = BuildHTMLHeader()
+	var finalString = BuildHTMLHeader(loop)
 	users := player.GetUserJSON()
 
 	users = player.SortUsers(users)
@@ -116,10 +119,14 @@ func CreateStateHTML(state string) string {
     <div class="navbar">
         <a href="/">Home</a>
 		<a>`
-	finalString += state
+	finalString += state + " / " + mode
 	finalString += `</a>
 	` + discordString + `
 	<a href="/login">Customize My Card</a>
+	<a href="/states/` + state + `/osu">Standard</a>
+	<a href="/states/` + state + `/mania">Mania</a>
+	<a href="/states/` + state + `/catch">Catch</a>
+	<a href="/states/` + state + `/taiko">Taiko</a>
     </div>
 	<br>
 	<br>
@@ -128,10 +135,18 @@ func CreateStateHTML(state string) string {
 	`
 	rank := 0
 	for i := 0; i < len(users.Users); i++ {
-		if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) {
-			rank++
-			finalString += CreateUser(users.Users[i])
+		if mode == "all" {
+			if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) {
+				rank++
+				finalString += CreateUser(users.Users[i], 0)
+			}
+		} else {
+			if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) && (users.Users[i].Playmode == mode) {
+				rank++
+				finalString += CreateUser(users.Users[i], rank)
+			}
 		}
+
 	}
 	finalString += "</div>"
 
@@ -240,15 +255,15 @@ func CreateOptions(user player.User) string {
 	return finalString
 }
 
-func CreateUser(user player.User) string {
+func CreateUser(user player.User, rank int) string {
 	finalString := (`<div class="players-container" id="response">
 						<div class="player">
 							<div class="player-preview">
-							<h4>#` + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
+							<h4>#` + getModeRank(rank) + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
 								<image class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
 								
 							</div>
-							<div class="player-info" style="` + GetBackground(user) + `">
+							<div class="player-info" style="` + getBackground(user) + `">
 								<div class="progress-container">
 									<span class="progress-text hide-on-mobile">
 										<h5>Mode: ` + user.Playmode + `</h5>
@@ -256,7 +271,7 @@ func CreateUser(user player.User) string {
 										<h5>Discord: ` + user.Discord + `</h5>
 									</span>
 								</div>
-								<h6>` + user.State + GetValidation(user) + `</h6>
+								<h6>` + user.State + getValidation(user) + `</h6>
 								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
 								<h4>Total PP: ` + FloatToString(user.Statistics.Pp) + `</h4>
 								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
@@ -269,16 +284,24 @@ func CreateUser(user player.User) string {
 	return finalString
 }
 
-func GetBackground(user player.User) string {
+func getBackground(user player.User) string {
 	if user.Background == "true" || user.Background == "" {
 		return `background-image: url('` + user.CoverURL + `'); `
 	}
 	return ""
 }
 
-func GetValidation(user player.User) string {
+func getValidation(user player.User) string {
 	if user.Locks.State_Lock {
 		return ` ✓`
 	}
 	return ""
+}
+
+func getModeRank(rank int) string {
+	if rank != 0 {
+		return strconv.Itoa(rank) + " | #"
+	} else {
+		return ""
+	}
 }
