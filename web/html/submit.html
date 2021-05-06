@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<title>User Submission</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600&display=swap" rel="stylesheet">
+<link rel="icon" href="home/media/favicon.png" type="image/x-icon"/>
+<link rel="stylesheet" type="text/css" href="web/css/main.css" />
+<link rel="stylesheet" type="text/css" href="web/css/flexbox.css" />
+<link rel="stylesheet" type="text/css" href="web/css/normalize.css" />
+<link rel="stylesheet" type="text/css" href="web/css/playercards.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="web/scripts/main.js"></script>
+<meta property="og:type" content="website">
+<meta property="og:title" content="State Leaderboard Submissions" />
+<meta property="og:description" content="Add yourself to the leaderboard!" />
+<meta property="og:url" content="https://pupper.moe" />
+<meta property="og:image" content="full thumbnail path" />
+
+<body>
+    <div class="navbar">
+        <a href="/">Home</a>
+        <a href="https://twitter.com/ponparpanpor">Contact</a>
+    </div>
+    <div class="flex-container">
+        <div class="main" style="min-width: 30%;">
+            <form class="submit-form">
+                <h2><label for="id">ID:</label></h2>
+                <input type="text" id="id" />
+                <h2><label for="state">State:</label></h2>
+                <select id="state">
+                    <option value="Alabama">Alabama</option>
+                    <option value="Alaska">Alaska</option>
+                    <option value="Arizona">Arizona</option>
+                    <option value="Arkansas">Arkansas</option>
+                    <option value="California">California</option>
+                    <option value="Colorado">Colorado</option>
+                    <option value="Connecticut">Connecticut</option>
+                    <option value="Delaware">Delaware</option>
+                    <option value="Florida">Florida</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Hawaii">Hawaii</option>
+                    <option value="Idaho">Idaho</option>
+                    <option value="Illinois">Illinois</option>
+                    <option value="Indiana">Indiana</option>
+                    <option value="Iowa">Iowa</option>
+                    <option value="Kansas">Kansas</option>
+                    <option value="Kentucky">Kentucky</option>
+                    <option value="Louisiana">Louisiana</option>
+                    <option value="Maine">Maine</option>
+                    <option value="Maryland">Maryland</option>
+                    <option value="Massachusetts">Massachusetts</option>
+                    <option value="Michigan">Michigan</option>
+                    <option value="Minnesota">Minnesota</option>
+                    <option value="Mississippi">Mississippi</option>
+                    <option value="Missouri">Missouri</option>
+                    <option value="Montana">Montana</option>
+                    <option value="Nebraska">Nebraska</option>
+                    <option value="Nevada">Nevada</option>
+                    <option value="New Hampshire">New Hampshire</option>
+                    <option value="New Jersey">New Jersey</option>
+                    <option value="New Mexico">New Mexico</option>
+                    <option value="New York">New York</option>
+                    <option value="North Carolina">North Carolina</option>
+                    <option value="North Dakota">North Dakota</option>
+                    <option value="Ohio">Ohio</option>
+                    <option value="Oklahoma">Oklahoma</option>
+                    <option value="Oregon">Oregon</option>
+                    <option value="Pennsylvania">Pennsylvania</option>
+                    <option value="Rhode Island">Rhode Island</option>
+                    <option value="South Carolina">South Carolina</option>
+                    <option value="South Dakota">South Dakota</option>
+                    <option value="Tennessee">Tennessee</option>
+                    <option value="Texas">Texas</option>
+                    <option value="Utah">Utah</option>
+                    <option value="Vermont">Vermont</option>
+                    <option value="Virginia">Virginia</option>
+                    <option value="Washington">Washington</option>
+                    <option value="West Virginia">West Virginia</option>
+                    <option value="Wisconsin">Wisconsin</option>
+                    <option value="Wyoming">Wyoming</option>
+                </select>
+            </form>
+            <br>
+            <button id="submitPlayer">Submit</button>
+            <br>
+            <div id="response"></div>
+        </div>
+        <div class="main">
+            <h2>How does this work?</h2>
+            <p style="max-width: 50%;">
+                To add yourself to the list or update your stats enter your account ID and your state then hit submit!
+            </p>
+            <p style="max-width: 50%;">
+                All added users are updated every night around 4am EST, this takes around 10-30 minutes. During this time all users being added will be deleted. 
+                This feature is still experimental so expect some bugs for the time being.
+                Once in the database, your user data is added to the appropriate state list. If you want a state discord
+                server added to your state's page, please contact me at the link above!
+            </p>
+            <p style="max-width: 50%;">
+                If you currently associate with more than one state, for now pick the one you prefer. I did not create
+                the site with that in mind, so I do not currently support it. I'll try and add that functionality in the
+                future!
+            </p>
+        </div>
+    </div>
+
+</body>
+
+</html>

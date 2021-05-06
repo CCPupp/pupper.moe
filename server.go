@@ -71,6 +71,31 @@ func main() {
 
 	})
 
+	http.HandleFunc("/submitPlayer", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, fmt.Sprintf("error parsing url %v", err), 500)
+		}
+		state := r.FormValue("state")
+		id := r.FormValue("id")
+		idInt, _ := strconv.Atoi(id)
+		if id != "0" {
+			if validations.ValidateState(state) {
+				if player.CheckStateLock(idInt) {
+					fmt.Fprint(w, "<h2>This user is locked!</h2>")
+				} else {
+					createUserFromId(id, state)
+					fmt.Fprint(w, "<h2>Success!</h2>")
+				}
+			} else {
+				fmt.Fprint(w, "<h2>Invalid State.</h2>")
+			}
+		} else {
+			fmt.Fprint(w, "<h2>User Already Exists.</h2>")
+		}
+
+	})
+
 	//Serves local webpage for testing
 	if secret.IS_TESTING {
 		errhttp := http.ListenAndServe(":8080", nil)
@@ -101,4 +126,11 @@ func user(w http.ResponseWriter, r *http.Request) string {
 	finalString += htmlbuilder.CreateOptions(player.RetrieveUser(user.ID))
 	finalString += htmlbuilder.BuildHTMLFooter()
 	return finalString
+}
+
+func createUserFromId(id string, state string) {
+	clientToken := api.GetClientToken()
+	var newUser player.User = api.GetUser(id, clientToken)
+	newUser.State = state
+	player.WriteToUser(newUser)
 }

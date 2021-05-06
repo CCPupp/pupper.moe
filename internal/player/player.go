@@ -99,6 +99,11 @@ func CheckDuplicate(dupe int) bool {
 	return false
 }
 
+func CheckStateLock(id int) bool {
+	user := GetUserById(id)
+	return user.Locks.State_Lock
+}
+
 func SetUserState(state string, id string) {
 	currentList := GetUserJSON()
 

@@ -244,8 +244,9 @@ func CreateUser(user player.User) string {
 	finalString := (`<div class="players-container" id="response">
 						<div class="player">
 							<div class="player-preview">
-								<h4>#` + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>
+							<h4>#` + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
 								<image class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
+								
 							</div>
 							<div class="player-info" style="` + GetBackground(user) + `">
 								<div class="progress-container">
@@ -255,7 +256,7 @@ func CreateUser(user player.User) string {
 										<h5>Discord: ` + user.Discord + `</h5>
 									</span>
 								</div>
-								<h6>` + user.State + `</h6>
+								<h6>` + user.State + GetValidation(user) + `</h6>
 								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
 								<h4>Total PP: ` + FloatToString(user.Statistics.Pp) + `</h4>
 								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
@@ -271,6 +272,13 @@ func CreateUser(user player.User) string {
 func GetBackground(user player.User) string {
 	if user.Background == "true" || user.Background == "" {
 		return `background-image: url('` + user.CoverURL + `'); `
+	}
+	return ""
+}
+
+func GetValidation(user player.User) string {
+	if user.Locks.State_Lock {
+		return ` ✓`
 	}
 	return ""
 }
