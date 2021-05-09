@@ -38,9 +38,24 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 	mode := discordgo.MessageEmbedField{
 		Name:   "Mode",
 		Value:  user.Playmode,
-		Inline: true,
+		Inline: false,
 	}
-	fields = append(fields, &mode)
+	state := discordgo.MessageEmbedField{
+		Name:   "State",
+		Value:  user.State,
+		Inline: false,
+	}
+	stateRank := discordgo.MessageEmbedField{
+		Name:   "State Rank",
+		Value:  strconv.Itoa(player.GetUserStateRank(user.ID, user.State)),
+		Inline: false,
+	}
+	globalRank := discordgo.MessageEmbedField{
+		Name:   "Global Rank",
+		Value:  strconv.Itoa(user.Statistics.Global_rank),
+		Inline: false,
+	}
+	fields = append(fields, &mode, &state, &stateRank, &globalRank)
 	// finalString := `
 	// 	**Mode:** ` + user.Playmode +
 	// 	`\n**State:** ` + user.State +
