@@ -5,3 +5,6 @@ converter.go
 go.sum
 go.mod
 .DS_Store
+certs/cert.pem
+.gitignore
+certs/key.pem
