@@ -174,6 +174,10 @@ ol {
 
 @media only screen and (max-width: 600px) {
 
+    .navbar {
+        position: unset;
+    }
+
     .btn {
         text-shadow: none;
         background-color:#9579d1;
@@ -235,12 +239,5 @@ ol {
 
     .statelist {
         padding-top: 15%;
-    }
-}
-
-@media only screen and (max-width: 406px) {
-    .statelist {
-        padding-top: 25%;
-        padding-bottom: 20%;
     }
 }

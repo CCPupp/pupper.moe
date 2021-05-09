@@ -146,9 +146,4 @@ body {
 		padding-right: 20px;
 		max-width: 150px;
 	}
-
-	.player-info {
-        background-image: none !important;
-		background: gray;
-    }
 }

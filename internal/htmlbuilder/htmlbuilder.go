@@ -122,13 +122,12 @@ func CreateStateHTML(state, mode string, loop int) string {
 	finalString += state + " / " + mode
 	finalString += `</a>
 	` + discordString + `
-	<a href="/login">Customize My Card</a>
 	<a href="/states/` + state + `/osu">Standard</a>
 	<a href="/states/` + state + `/mania">Mania</a>
 	<a href="/states/` + state + `/catch">Catch</a>
 	<a href="/states/` + state + `/taiko">Taiko</a>
+	<a href="/login">Customize My Card</a>
     </div>
-	<br>
 	<br>
 	<p id="result"></p>
 	<div class="playerlist">
