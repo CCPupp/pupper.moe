@@ -10,6 +10,7 @@ import (
 	"secret"
 
 	"github.com/CCPupp/pupper.moe/internal/api"
+	"github.com/CCPupp/pupper.moe/internal/discord"
 	"github.com/CCPupp/pupper.moe/internal/htmlbuilder"
 	"github.com/CCPupp/pupper.moe/internal/player"
 	"github.com/CCPupp/pupper.moe/internal/updater"
@@ -22,6 +23,8 @@ func main() {
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
+
+	go discord.StartBot()
 	// Handler points to available directories
 	http.Handle("/web/html", http.StripPrefix("/web/html", http.FileServer(http.Dir("web/html"))))
 	http.Handle("/web/scripts/", http.StripPrefix("/web/scripts/", http.FileServer(http.Dir("web/scripts"))))
