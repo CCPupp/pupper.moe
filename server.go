@@ -19,6 +19,8 @@ import (
 	_ "github.com/bmizerany/pq"
 )
 
+const OnlyBot = false
+
 func main() {
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
@@ -112,33 +114,42 @@ func main() {
 	})
 
 	//Serves local webpage for testing
-	if secret.IS_TESTING {
-		errhttp := http.ListenAndServe(":8080", nil)
-		if errhttp != nil {
-			log.Fatal("Web server (HTTP): ", errhttp)
-		}
-	} else {
-		//Serves the webpage to the internet
-		errhttps := http.ListenAndServeTLS(":443", "certs/cert.pem", "certs/key.pem", nil)
-		if errhttps != nil {
-			log.Fatal("Web server (HTTPS): ", errhttps)
+	if OnlyBot == false {
+		if secret.IS_TESTING {
+			errhttp := http.ListenAndServe(":8080", nil)
+			if errhttp != nil {
+				log.Fatal("Web server (HTTP): ", errhttp)
+			}
+		} else {
+			//Serves the webpage to the internet
+			errhttps := http.ListenAndServeTLS(":443", "certs/cert.pem", "certs/key.pem", nil)
+			if errhttps != nil {
+				log.Fatal("Web server (HTTPS): ", errhttps)
+			}
 		}
 	}
+
 }
 
 func user(w http.ResponseWriter, r *http.Request) string {
 	token := api.GetUserToken(r.URL.Query().Get("code"))
 	id := api.GetMe("osu", w, r, token)
 	user := api.GetUser(strconv.Itoa(id.ID), token)
+	var localUser player.User
 	if player.CheckDuplicate(user.ID) {
-		player.OverwriteExisting(player.RetrieveUser(user.ID), user)
+		localUser = player.RetrieveUser(user.ID)
+		player.OverwriteExisting(localUser, user)
 	} else {
 		player.WriteToUser(user)
+		localUser = player.RetrieveUser(user.ID)
 	}
 	finalString := htmlbuilder.BuildHTMLHeader(1)
 	finalString += htmlbuilder.BuildHTMLNavbar()
-	finalString += htmlbuilder.CreateUser(player.RetrieveUser(user.ID), 0)
-	finalString += htmlbuilder.CreateOptions(player.RetrieveUser(user.ID))
+	finalString += htmlbuilder.CreateUser(localUser, 0)
+	finalString += htmlbuilder.CreateOptions(localUser)
+	if localUser.Admin {
+		finalString += htmlbuilder.CreateAdminPanel(localUser)
+	}
 	finalString += htmlbuilder.BuildHTMLFooter()
 	return finalString
 }

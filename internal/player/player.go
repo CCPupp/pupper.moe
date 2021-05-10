@@ -25,6 +25,8 @@ type User struct {
 	State      string    `json:"state"`
 	Background string    `json:"background"`
 	Locks      Lock_info `json:"locks"`
+	Admin      bool      `json:"admin"`
+	DiscordID  string    `json:"discordid"`
 }
 
 type Statistic struct {
@@ -148,6 +150,34 @@ func SetUserMode(mode string, id string) {
 	ioutil.WriteFile("web/data/users.json", finalList, 0644)
 }
 
+func SetUserAdmin(user User) {
+	currentList := GetUserJSON()
+
+	for i := 0; i < len(currentList.Users); i++ {
+		if currentList.Users[i].ID == user.ID {
+			currentList.Users[i].Admin = true
+		}
+	}
+
+	finalList, _ := json.Marshal(currentList)
+
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
+}
+
+func SetUserDiscordID(user User, discordID string) {
+	currentList := GetUserJSON()
+
+	for i := 0; i < len(currentList.Users); i++ {
+		if currentList.Users[i].ID == user.ID {
+			currentList.Users[i].DiscordID = discordID
+		}
+	}
+
+	finalList, _ := json.Marshal(currentList)
+
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
+}
+
 func WriteToUser(newUser User) {
 	currentList := GetUserJSON()
 
@@ -178,6 +208,8 @@ func WriteToUser(newUser User) {
 		State:          newUser.State,
 		Background:     newUser.Background,
 		Locks:          newUser.Locks,
+		Admin:          newUser.Admin,
+		DiscordID:      newUser.DiscordID,
 	})
 
 	finalList, _ := json.Marshal(currentList)
@@ -215,6 +247,8 @@ func OverwriteExisting(existingUser User, pulledUser User) {
 		State:          existingUser.State,
 		Background:     existingUser.Background,
 		Locks:          existingUser.Locks,
+		Admin:          existingUser.Admin,
+		DiscordID:      existingUser.DiscordID,
 	}
 
 	for i := 0; i < len(currentList.Users); i++ {

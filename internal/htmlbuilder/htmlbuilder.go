@@ -283,6 +283,20 @@ func CreateUser(user player.User, rank int) string {
 	return finalString
 }
 
+func CreateAdminPanel(user player.User) string {
+	finalString := (`<div class="settings-container player-container black-font">
+						<div class="user-settings">
+							<div class="settings-info">
+								<p>Admin Panel.</p>
+								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
+								<br>
+								
+								<button id="adminupdate">Submit</button>
+							</div>
+						</div>`)
+	return finalString
+}
+
 func getBackground(user player.User) string {
 	if user.Background == "true" || user.Background == "" {
 		return `background-image: url('` + user.CoverURL + `'); `

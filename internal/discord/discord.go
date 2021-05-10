@@ -6,11 +6,13 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"secret"
 
 	"github.com/CCPupp/pupper.moe/internal/commands"
+	"github.com/CCPupp/pupper.moe/internal/player"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -25,6 +27,9 @@ type Discord struct {
 
 const prefix = "-"
 const botToken = secret.DISCORD_TOKEN
+
+//ponpar discord ID
+const adminID = "98190856254676992"
 
 func GetDiscordJSON() Discords {
 	// Open our jsonFile
@@ -90,6 +95,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, commands.Ping(command))
 		} else if command[0:7] == "getuser" {
 			s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(command[8:]))
+		} else if command[0:8] == "setadmin" {
+			if m.Author.ID == adminID {
+				idInt, _ := strconv.Atoi(command[9:])
+				s.ChannelMessageSend(m.ChannelID, commands.AssignAdmin(player.GetUserById(idInt)))
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "Only ponpar can run this command.")
+			}
+		} else if command[0:4] == "link" {
+			idInt, _ := strconv.Atoi(command[5:])
+			s.ChannelMessageSend(m.ChannelID, commands.LinkDiscordAccount(player.GetUserById(idInt), m.Author))
 		}
 
 	}

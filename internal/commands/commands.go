@@ -33,6 +33,24 @@ func GetUser(id string) *discordgo.MessageEmbed {
 	return &embed
 }
 
+func AssignAdmin(user player.User) string {
+	if user.ID != 0 {
+		player.SetUserAdmin(user)
+		return user.Username + " is now an admin."
+	} else {
+		return "Invalid ID"
+	}
+}
+
+func LinkDiscordAccount(user player.User, discordUser *discordgo.User) string {
+	if user.ID != 0 {
+		player.SetUserDiscordID(user, discordUser.ID)
+		return user.Username + " is linked to " + discordUser.Mention() + "."
+	} else {
+		return "Invalid ID"
+	}
+}
+
 func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 	fields := []*discordgo.MessageEmbedField{}
 	mode := discordgo.MessageEmbedField{
@@ -56,10 +74,5 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 		Inline: false,
 	}
 	fields = append(fields, &mode, &state, &stateRank, &globalRank)
-	// finalString := `
-	// 	**Mode:** ` + user.Playmode +
-	// 	`\n**State:** ` + user.State +
-	// 	`\n**State Rank:** ` + strconv.Itoa(player.GetUserStateRank(user.ID, user.State)) +
-	// 	`\n**Global Rank:** ` + strconv.Itoa(user.Statistics.Global_rank)
 	return fields
 }
