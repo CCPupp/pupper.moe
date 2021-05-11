@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -68,11 +69,12 @@ func CreateAllHTML(loop int) string {
 	<br>
 	<div class='flex-container black-font'>
 	<ol>
-	<b>Total Users: ` + strconv.Itoa(len(users.Users)) + `</b><br><br>`
+	<b>Total Users: ` + strconv.Itoa(len(users.Users)) + `</b><br><br>
+	<b>Total Verified Users: ` + player.GetTotalVerified() + `</b><br><br>`
 
 	for i := len(users.Users) - 1; i >= 0; i-- {
 		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='/states/" + users.Users[i].State + "' class='usercard black-font'>" + users.Users[i].Username + "</a>")
-		finalString += ("<b>State: " + users.Users[i].State + "</b></div></li>")
+		finalString += ("<b>State: " + users.Users[i].State + getValidation(users.Users[i]) + "</b></div></li>")
 	}
 
 	// Open our jsonFile
@@ -267,17 +269,18 @@ func CreateUser(user player.User, rank int) string {
 									<span class="progress-text hide-on-mobile">
 										<h5>Mode: ` + user.Playmode + `</h5>
 										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
-										<h5>Discord: ` + user.Discord + `</h5>
+										<h5>Discord: ` + user.Discord + getLink(user) + `</h5>
 									</span>
 								</div>
 								<h6>` + user.State + getValidation(user) + `</h6>
 								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
 								<h4>Total PP: ` + FloatToString(user.Statistics.Pp) + `</h4>
-								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
+								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + getBWS(user) + `</h4>
 								<h4>Accuracy: ` + FloatToString(user.Statistics.Accuracy) + `</h4>
 								<h4>Playcount: ` + strconv.Itoa(user.Statistics.Play_count) + `</h4>
 							</div>
 						</div>
+						` + getBadges(user) + `
 					</div>
 				</div>`)
 	return finalString
@@ -311,10 +314,49 @@ func getValidation(user player.User) string {
 	return ""
 }
 
+func getLink(user player.User) string {
+	if user.DiscordID != "" {
+		return ` ✓`
+	}
+	return ""
+}
+
 func getModeRank(rank int) string {
 	if rank != 0 {
 		return strconv.Itoa(rank) + " | #"
 	} else {
 		return ""
 	}
+}
+
+func getBadges(user player.User) string {
+	finalString := ""
+	if user.Badges != nil {
+		finalString += `<div class="badges">`
+		for i := 0; i < len(user.Badges); i++ {
+			finalString += `<image src="` + user.Badges[i].Image_URL + `" >`
+			if math.Mod(float64(i+1), 10) == 0 {
+				finalString += `</div><div class="badges">`
+			}
+		}
+		finalString += `</div>`
+	}
+	return finalString
+}
+
+func getBWS(user player.User) string {
+	finalString := ""
+	if user.Badges != nil {
+		var total = 0
+		for i := 0; i < len(user.Badges); i++ {
+			total++
+		}
+		//Math.round(Math.pow(rank, Math.pow(0.9937, Math.pow(badges, 2)))).toLocaleString();
+		bwsRank := math.Round(math.Pow((float64(user.Statistics.Global_rank)), math.Pow(0.9937, math.Pow(float64(total), 2))))
+		finalString = fmt.Sprintf("%f", bwsRank)
+		parts := strings.Split(finalString, ".")
+		finalString = ` | BWS: ` + parts[0]
+
+	}
+	return finalString
 }

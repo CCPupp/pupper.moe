@@ -21,6 +21,7 @@ type User struct {
 	CountryCode    string    `json:"country_code"`
 	Playmode       string    `json:"playmode"`
 	ReplaysWatched int       `json:"replays_watched_by_others"`
+	Badges         []Badge   `json:"badges"`
 	// These items are not pulled from the osu!api and instead are stored locally.
 	State      string    `json:"state"`
 	Background string    `json:"background"`
@@ -49,6 +50,13 @@ type Lock_info struct {
 
 type Users struct {
 	Users []User `json:"users"`
+}
+
+type Badge struct {
+	Awarded_At  string `json:"awarded_at" `
+	Description string `json:"description" `
+	Image_URL   string `json:"image_url"  `
+	URL         string `json:"url"`
 }
 
 func GetUserById(id int) User {
@@ -180,6 +188,18 @@ func SetUserDiscordID(user User, discordID string) {
 
 func WriteToUser(newUser User) {
 	currentList := GetUserJSON()
+	var badge Badge
+	var badges []Badge
+	for i := 0; i < len(newUser.Badges); i++ {
+		badge = Badge{
+			Awarded_At:  newUser.Badges[i].Awarded_At,
+			Description: newUser.Badges[i].Description,
+			Image_URL:   newUser.Badges[i].Image_URL,
+			URL:         newUser.Badges[i].URL,
+		}
+
+		badges = append(badges, badge)
+	}
 
 	level := Level_info{
 		Current:  newUser.Statistics.Level.Current,
@@ -210,6 +230,7 @@ func WriteToUser(newUser User) {
 		Locks:          newUser.Locks,
 		Admin:          newUser.Admin,
 		DiscordID:      newUser.DiscordID,
+		Badges:         badges,
 	})
 
 	finalList, _ := json.Marshal(currentList)
@@ -219,6 +240,18 @@ func WriteToUser(newUser User) {
 
 func OverwriteExisting(existingUser User, pulledUser User) {
 	currentList := GetUserJSON()
+	var badge Badge
+	var badges []Badge
+	for i := 0; i < len(pulledUser.Badges); i++ {
+		badge = Badge{
+			Awarded_At:  pulledUser.Badges[i].Awarded_At,
+			Description: pulledUser.Badges[i].Description,
+			Image_URL:   pulledUser.Badges[i].Image_URL,
+			URL:         pulledUser.Badges[i].URL,
+		}
+
+		badges = append(badges, badge)
+	}
 
 	level := Level_info{
 		Current:  pulledUser.Statistics.Level.Current,
@@ -249,6 +282,7 @@ func OverwriteExisting(existingUser User, pulledUser User) {
 		Locks:          existingUser.Locks,
 		Admin:          existingUser.Admin,
 		DiscordID:      existingUser.DiscordID,
+		Badges:         badges,
 	}
 
 	for i := 0; i < len(currentList.Users); i++ {
@@ -288,4 +322,16 @@ func GetUserStateRank(id int, state string) int {
 	}
 
 	return 0
+}
+
+func GetTotalVerified() string {
+	users := SortUsers(GetUserJSON())
+	total := 0
+	for i := 0; i < len(users.Users); i++ {
+		if users.Users[i].Locks.State_Lock {
+			total++
+		}
+	}
+
+	return strconv.Itoa(total)
 }
