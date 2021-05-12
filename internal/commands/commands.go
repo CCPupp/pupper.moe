@@ -11,6 +11,13 @@ func Ping() string {
 	return "Pong!"
 }
 
+func Help() *discordgo.MessageEmbed {
+	return &discordgo.MessageEmbed{
+		Title:  "Commands:",
+		Fields: makeHelpFields(),
+	}
+}
+
 func GetUser(id string) *discordgo.MessageEmbed {
 	embed := discordgo.MessageEmbed{
 		Title: "Invalid ID",
@@ -74,5 +81,16 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 		Inline: true,
 	}
 	fields = append(fields, &mode, &state, &stateRank, &globalRank)
+	return fields
+}
+
+func makeHelpFields() []*discordgo.MessageEmbedField {
+	fields := []*discordgo.MessageEmbedField{}
+	ping := discordgo.MessageEmbedField{
+		Name:   "-ping",
+		Value:  "Pong!",
+		Inline: true,
+	}
+	fields = append(fields, &ping)
 	return fields
 }
