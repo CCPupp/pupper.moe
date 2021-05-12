@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 
 	"secret"
 
@@ -81,19 +82,24 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// If the message starts with the prefix, handle accordingly.
 	if m.Content[0:1] == prefix {
 		command := m.Content[1:]
-		if command == "ping" {
-			s.ChannelMessageSend(m.ChannelID, commands.Ping(command))
-		} else if command[0:7] == "getuser" {
-			s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(command[8:]))
-		} else if command[0:8] == "setadmin" {
+		parts := strings.Split(command, " ")
+		length := len(parts)
+		if parts[0] == "ping" {
+			s.ChannelMessageSend(m.ChannelID, commands.Ping())
+		} else if parts[0] == "getuser" && length > 1 {
+			s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(parts[1]))
+		} else if parts[0] == "setadmin" && length > 1 {
 			if m.Author.ID == adminID {
-				idInt, _ := strconv.Atoi(command[9:])
+				idInt, _ := strconv.Atoi(parts[1])
 				s.ChannelMessageSend(m.ChannelID, commands.AssignAdmin(player.GetUserById(idInt)))
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "Only ponpar can run this command.")
 			}
-		} else if command[0:4] == "link" {
-			idInt, _ := strconv.Atoi(command[5:])
+		} else if parts[0] == "link" && length > 1 {
+			idInt, err := strconv.Atoi(parts[1])
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "Not a Valid osu! ID.")
+			}
 			s.ChannelMessageSend(m.ChannelID, commands.LinkDiscordAccount(player.GetUserById(idInt), m.Author))
 		}
 

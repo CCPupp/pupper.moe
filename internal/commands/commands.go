@@ -7,7 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func Ping(content string) string {
+func Ping() string {
 	return "Pong!"
 }
 
@@ -56,22 +56,22 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 	mode := discordgo.MessageEmbedField{
 		Name:   "Mode",
 		Value:  user.Playmode,
-		Inline: false,
+		Inline: true,
 	}
 	state := discordgo.MessageEmbedField{
 		Name:   "State",
 		Value:  user.State,
-		Inline: false,
+		Inline: true,
 	}
 	stateRank := discordgo.MessageEmbedField{
 		Name:   "State Rank",
 		Value:  strconv.Itoa(player.GetUserStateRank(user.ID, user.State)),
-		Inline: false,
+		Inline: true,
 	}
 	globalRank := discordgo.MessageEmbedField{
 		Name:   "Global Rank",
 		Value:  strconv.Itoa(user.Statistics.Global_rank),
-		Inline: false,
+		Inline: true,
 	}
 	fields = append(fields, &mode, &state, &stateRank, &globalRank)
 	return fields
