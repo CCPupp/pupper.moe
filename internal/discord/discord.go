@@ -86,7 +86,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		length := len(parts)
 		if parts[0] == "ping" {
 			s.ChannelMessageSend(m.ChannelID, commands.Ping())
-		} else if parts[0] == "getuser" && length > 1 {
+		} else if parts[0] == "getuser" || parts[0] == "stats" {
+			if len(parts) == 1 {
+				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.GetUserByDiscordId(m.Author.ID).ID)))
+			}
 			s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(parts[1]))
 		} else if parts[0] == "setadmin" && length > 1 {
 			if m.Author.ID == adminID {

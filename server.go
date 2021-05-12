@@ -137,11 +137,11 @@ func user(w http.ResponseWriter, r *http.Request) string {
 	user := api.GetUser(strconv.Itoa(id.ID), token)
 	var localUser player.User
 	if player.CheckDuplicate(user.ID) {
-		localUser = player.RetrieveUser(user.ID)
+		localUser = player.GetUserById(user.ID)
 		player.OverwriteExisting(localUser, user)
 	} else {
 		player.WriteToUser(user)
-		localUser = player.RetrieveUser(user.ID)
+		localUser = player.GetUserById(user.ID)
 	}
 	finalString := htmlbuilder.BuildHTMLHeader(1)
 	finalString += htmlbuilder.BuildHTMLNavbar()

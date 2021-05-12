@@ -73,6 +73,19 @@ func GetUserById(id int) User {
 
 }
 
+func GetUserByDiscordId(id string) User {
+	users := GetUserJSON()
+
+	for i := 0; i < len(users.Users); i++ {
+		if users.Users[i].DiscordID == id {
+			return users.Users[i]
+		}
+	}
+
+	var nullUser User
+	return nullUser
+}
+
 func GetUserJSON() Users {
 	jsonFile, err := os.Open("web/data/users.json")
 	if err != nil {
@@ -295,18 +308,6 @@ func OverwriteExisting(existingUser User, pulledUser User) {
 	finalList, _ := json.Marshal(currentList)
 
 	ioutil.WriteFile("web/data/users.json", finalList, 0644)
-}
-
-func RetrieveUser(id int) User {
-	users := GetUserJSON()
-	var user User
-	for i := 0; i < len(users.Users); i++ {
-		if users.Users[i].ID == id {
-			user = users.Users[i]
-		}
-	}
-
-	return user
 }
 
 func GetUserStateRank(id int, state string) int {
