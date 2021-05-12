@@ -35,5 +35,5 @@ func doUpdate() {
 
 func updateUser(users player.Users, i int, clientToken string) {
 	updatedUser := api.GetUser(strconv.Itoa(users.Users[i].ID), clientToken)
-	player.OverwriteExisting(player.RetrieveUser(users.Users[i].ID), updatedUser)
+	player.OverwriteExisting(player.GetUserById(users.Users[i].ID), updatedUser)
 }
