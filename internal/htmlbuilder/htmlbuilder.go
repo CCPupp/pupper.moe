@@ -334,7 +334,7 @@ func getBadges(user player.User) string {
 	if user.Badges != nil {
 		finalString += `<div class="badges">`
 		for i := 0; i < len(user.Badges); i++ {
-			finalString += `<image src="` + user.Badges[i].Image_URL + `" >`
+			finalString += `<image class="badge" src="` + user.Badges[i].Image_URL + `">`
 			if math.Mod(float64(i+1), 10) == 0 {
 				finalString += `</div><div class="badges">`
 			}

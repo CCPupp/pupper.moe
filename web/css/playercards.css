@@ -17,6 +17,11 @@ body {
 	margin: 0;
 }
 
+.badge {
+	width: 10%;
+	height: 100%;
+}
+
 .badges {
 	border-radius: 10px;
 	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
