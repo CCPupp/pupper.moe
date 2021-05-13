@@ -95,7 +95,7 @@ func main() {
 		state := r.FormValue("state")
 		id := r.FormValue("id")
 		idInt, _ := strconv.Atoi(id)
-		if id != "0" {
+		if player.GetUserById(idInt).ID != 0 {
 			if validations.ValidateState(state) {
 				if player.CheckStateLock(idInt) {
 					fmt.Fprint(w, "<h2>This user is locked!</h2>")
