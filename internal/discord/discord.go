@@ -112,9 +112,29 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		} else if parts[0] == "state" || parts[0] == "leaderboard" || parts[0] == "lb" {
 			if len(parts) == 1 {
-				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.GetUserByDiscordId(m.Author.ID).State))
-			} else {
-				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1]))
+				// print page 1 of user's state
+				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.GetUserByDiscordId(m.Author.ID).State, 1))
+			} else if len(parts) == 2 {
+				if page, err := strconv.Atoi(parts[1]); err == nil {
+					// print page X of user's state
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.GetUserByDiscordId(m.Author.ID).State, page))
+				} else {
+					// print page 1 of given state
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1], 1))
+				}
+			} else if len(parts) == 3 {
+				if page, err := strconv.Atoi(parts[2]); err == nil {
+					// print page X of given state
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1], page))
+				} else {
+					// print page 1 of given state with a space
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1]+" "+parts[2], 1))
+				}
+			} else if len(parts) == 4 {
+				if page, err := strconv.Atoi(parts[3]); err == nil {
+					// print page X of given state
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1]+" "+parts[2], page))
+				}
 			}
 		} else if parts[0] == "setadmin" && length > 1 {
 			if m.Author.ID == adminID {

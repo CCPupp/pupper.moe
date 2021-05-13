@@ -2,6 +2,7 @@ package commands
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/CCPupp/pupper.moe/internal/player"
 	"github.com/CCPupp/pupper.moe/internal/validations"
@@ -60,14 +61,15 @@ func LinkDiscordAccount(user player.User, discordUser *discordgo.User) string {
 	}
 }
 
-func GetStateLeaderboard(state string) *discordgo.MessageEmbed {
+// TODO Add a way of seeing other pages of 5 people
+func GetStateLeaderboard(state string, page int) *discordgo.MessageEmbed {
 	embed := discordgo.MessageEmbed{
 		Title: "Invalid State / Account Not Linked",
 	}
-	if validations.ValidateState(state) {
+	if validations.ValidateState(strings.Title(state)) {
 		embed = discordgo.MessageEmbed{
-			Title:  state,
-			Fields: makeStateFields(state),
+			Title:  strings.Title(state),
+			Fields: makeStateFields(strings.Title(state), page),
 		}
 		return &embed
 	}
@@ -105,7 +107,7 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 	return fields
 }
 
-func makeStateFields(state string) []*discordgo.MessageEmbedField {
+func makeStateFields(state string, page int) []*discordgo.MessageEmbedField {
 	fields := []*discordgo.MessageEmbedField{}
 	users := player.GetUserJSON()
 	users = player.SortUsers(users)
@@ -114,6 +116,7 @@ func makeStateFields(state string) []*discordgo.MessageEmbedField {
 	player3 := discordgo.MessageEmbedField{}
 	player4 := discordgo.MessageEmbedField{}
 	player5 := discordgo.MessageEmbedField{}
+	start := 5 * (page - 1)
 	count := 0
 	errorEmbed := discordgo.MessageEmbedField{
 		Name:   "Error",
@@ -123,35 +126,35 @@ func makeStateFields(state string) []*discordgo.MessageEmbedField {
 	for i := 0; i < len(users.Users); i++ {
 		if users.Users[i].State == state {
 			count++
-			if count == 1 {
+			if count == start+1 {
 				player1 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
 					Value:  users.Users[i].Username,
 					Inline: false,
 				}
 			}
-			if count == 2 {
+			if count == start+2 {
 				player2 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
 					Value:  users.Users[i].Username,
 					Inline: false,
 				}
 			}
-			if count == 3 {
+			if count == start+3 {
 				player3 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
 					Value:  users.Users[i].Username,
 					Inline: false,
 				}
 			}
-			if count == 4 {
+			if count == start+4 {
 				player4 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
 					Value:  users.Users[i].Username,
 					Inline: false,
 				}
 			}
-			if count == 5 {
+			if count == start+5 {
 				player5 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
 					Value:  users.Users[i].Username,
