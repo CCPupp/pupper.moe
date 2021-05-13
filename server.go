@@ -25,7 +25,6 @@ func main() {
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
-
 	go discord.StartBot()
 	// Handler points to available directories
 	http.Handle("/web/html", http.StripPrefix("/web/html", http.FileServer(http.Dir("web/html"))))
@@ -44,15 +43,15 @@ func main() {
 		} else if r.URL.Path[1:7] == "states" {
 			if r.URL.Path[8:] != "" {
 				if r.URL.Path[len(r.URL.Path)-3:] == "osu" {
-					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-4], "osu", 2))
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-4], "osu", 2)
 				} else if r.URL.Path[len(r.URL.Path)-5:] == "mania" {
-					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-6], "mania", 2))
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "mania", 2)
 				} else if r.URL.Path[len(r.URL.Path)-5:] == "catch" {
-					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-6], "fruits", 2))
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "fruits", 2)
 				} else if r.URL.Path[len(r.URL.Path)-5:] == "taiko" {
-					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:len(r.URL.Path)-6], "taiko", 2))
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "taiko", 2)
 				} else {
-					fmt.Fprint(w, htmlbuilder.CreateStateHTML(r.URL.Path[8:], "all", 1))
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:], "all", 1)
 				}
 			}
 		} else {
