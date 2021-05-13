@@ -177,7 +177,6 @@ ol {
 
     .btn {
         text-shadow: none;
-        background-color:#9579d1;
         border: 0;
         border-radius: 50px;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
@@ -188,15 +187,10 @@ ol {
         bottom: 15px;
         right: 30px;
         letter-spacing: 1px;
-    }
-    
-    .btn:hover {
-        background-color:#be9ddf;
-    }
+    } 
     
     .btn-above {
         text-shadow: none;
-        background-color:#9579d1;
         border: 0;
         border-radius: 50px;
         box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
@@ -207,10 +201,6 @@ ol {
         bottom: 70px;
         right: 30px;
         letter-spacing: 1px;
-    }
-
-    .btn-above:hover {
-        background-color:#be9ddf;
     }
     
     .black-font {
@@ -235,6 +225,11 @@ ol {
     }
 
     .statelist {
-        padding-top: 15%;
+        padding-bottom: 0px;
+    }
+
+    .mobile-state-bottom {
+        margin-top: -10%;
+        padding-bottom: 15%;
     }
 }
