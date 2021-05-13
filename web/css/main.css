@@ -2,25 +2,26 @@ body {
     margin: 0;
     font-family: 'Roboto', sans-serif;
     text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;
-    color: white;
-    background-image: linear-gradient(0deg, #77b2d4, #adf0fc);
+    color: rgb(224, 224, 224);
+    background-color:  #1C1719;
 }
 
 p {
     font-size: larger;
     font-weight: bold;
+    color: rgb(224, 224, 224);
 }
 
 a{
     text-decoration: none;
-    color: white;
+    color: rgb(224, 224, 224);
     font-weight: bolder;
     font-size: larger;
 }
 
 a:visited {
     text-decoration: none;
-    color: white;
+    color: rgb(224, 224, 224);
 }
 
 select {
@@ -30,7 +31,7 @@ select {
 .navbar {
     overflow: hidden;
     width: 100%;
-    background-color:#9579d1;
+    background-color:#3D2932;
     margin: 0;
     top: 0;
     position: fixed;
@@ -47,7 +48,7 @@ select {
 }
 
 .navbar a:hover {
-    background: #ffa5d8;
+    background: #D99288;
 }
 
 .main {
@@ -105,10 +106,6 @@ ol {
     padding-bottom:20%;
 }
 
-.statelist ul li a {
-    color: black;
-}
-
 .main-right {
     max-width: 10%;
     min-width: 20%;
@@ -129,7 +126,7 @@ ol {
 
 .btn {
     text-shadow: none;
-	background-color:#9579d1;
+	background-color:#382E32;
 	border: 0;
 	border-radius: 50px;
 	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
@@ -144,12 +141,12 @@ ol {
 }
 
 .btn:hover {
-    background-color:#be9ddf;
+    background-color:#C45686;
 }
 
 .btn-above {
     text-shadow: none;
-    background-color:#9579d1;
+    background-color:#382E32;
 	border: 0;
 	border-radius: 50px;
 	box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
@@ -164,7 +161,7 @@ ol {
 }
 
 .btn-above:hover {
-    background-color:#be9ddf;
+    background-color:#708C0F;
 }
 
 .black-font {
@@ -223,14 +220,14 @@ ol {
 
     a{
         text-decoration: none;
-        color: white;
+        color: rgb(224, 224, 224);
         font-weight: normal;
         font-size: 130%;
     }
     
     a:visited {
         text-decoration: none;
-        color: white;
+        color: rgb(224, 224, 224);
     }
 
     .hide-on-mobile {

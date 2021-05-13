@@ -173,7 +173,7 @@ func CreateOptions(user player.User) string {
 	finalString := (`<div class="settings-container player-container black-font">
 						<div class="user-settings">
 							<div class="settings-info">
-								<p>Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
+								<p class="black-font">Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
 								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
 								<select id="bg">
@@ -287,10 +287,10 @@ func CreateUser(user player.User, rank int) string {
 }
 
 func CreateAdminPanel(user player.User) string {
-	finalString := (`<div class="settings-container player-container black-font">
+	finalString := (`<div class="settings-container player-container">
 						<div class="user-settings">
 							<div class="settings-info">
-								<p>Admin Panel.</p>
+								<p class="black-font">Admin Panel.</p>
 								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
 								
