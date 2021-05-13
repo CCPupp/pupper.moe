@@ -345,18 +345,9 @@ func getBadges(user player.User) string {
 }
 
 func getBWS(user player.User) string {
-	finalString := ""
-	if user.Badges != nil {
-		var total = 0
-		for i := 0; i < len(user.Badges); i++ {
-			total++
-		}
-		//Math.round(Math.pow(rank, Math.pow(0.9937, Math.pow(badges, 2)))).toLocaleString();
-		bwsRank := math.Round(math.Pow((float64(user.Statistics.Global_rank)), math.Pow(0.9937, math.Pow(float64(total), 2))))
-		finalString = fmt.Sprintf("%f", bwsRank)
-		parts := strings.Split(finalString, ".")
-		finalString = ` | BWS: ` + parts[0]
-
+	if user.Statistics.Global_rank != player.GetBWSRank(user) {
+		return ` | BWS: ` + strconv.Itoa(player.GetBWSRank(user))
+	} else {
+		return ""
 	}
-	return finalString
 }

@@ -101,8 +101,12 @@ func main() {
 				if player.CheckStateLock(idInt) {
 					fmt.Fprint(w, "<h2>This user is locked!</h2>")
 				} else {
-					createUserFromId(id, state)
-					fmt.Fprint(w, "<h2>Success!</h2>")
+					if updater.IsUpdating {
+						fmt.Fprint(w, "<h2>Update in progress, please wait.</h2>")
+					} else {
+						createUserFromId(id, state)
+						fmt.Fprint(w, "<h2>Success!</h2>")
+					}
 				}
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")

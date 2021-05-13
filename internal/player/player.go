@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 // Player stores information about the player to parse onto the webpage
@@ -120,6 +122,22 @@ func CheckDuplicate(dupe int) bool {
 	}
 
 	return false
+}
+
+func GetBWSRank(user User) int {
+	if user.Badges != nil {
+		var total = 0
+		for i := 0; i < len(user.Badges); i++ {
+			total++
+		}
+		//Math.round(Math.pow(rank, Math.pow(0.9937, Math.pow(badges, 2)))).toLocaleString();
+		bwsRankFloat := math.Round(math.Pow((float64(user.Statistics.Global_rank)), math.Pow(0.9937, math.Pow(float64(total), 2))))
+		tempString := fmt.Sprintf("%f", bwsRankFloat)
+		parts := strings.Split(tempString, ".")
+		finalInt, _ := strconv.Atoi(parts[0])
+		return finalInt
+	}
+	return user.Statistics.Global_rank
 }
 
 func CheckStateLock(id int) bool {

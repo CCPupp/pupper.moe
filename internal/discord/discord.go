@@ -79,6 +79,8 @@ func StartBot() {
 	// Cleanly close down the Discord session.
 	dg.Close()
 
+	os.Exit(0)
+
 }
 
 // This function will be called (due to AddHandler above) every time a new
@@ -93,6 +95,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// If the message starts with the prefix, handle accordingly.
 	if m.Content[0:1] == prefix {
 		command := m.Content[1:]
+		fmt.Println(m.Author.Username + " used command: `" + command + "`")
 		parts := strings.Split(command, " ")
 		length := len(parts)
 		if parts[0] == "ping" {
@@ -100,8 +103,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else if parts[0] == "getuser" || parts[0] == "stats" {
 			if len(parts) == 1 {
 				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.GetUserByDiscordId(m.Author.ID).ID)))
+			} else {
+				if strings.HasPrefix(parts[1], "<@!") {
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.GetUserByDiscordId(strings.Trim(parts[1], "<@!>")).ID)))
+				} else {
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(parts[1]))
+				}
 			}
-			s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(parts[1]))
+		} else if parts[0] == "state" || parts[0] == "leaderboard" || parts[0] == "lb" {
+			if len(parts) == 1 {
+				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.GetUserByDiscordId(m.Author.ID).State))
+			} else {
+				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1]))
+			}
 		} else if parts[0] == "setadmin" && length > 1 {
 			if m.Author.ID == adminID {
 				idInt, _ := strconv.Atoi(parts[1])
@@ -113,8 +127,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			idInt, err := strconv.Atoi(parts[1])
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, "Not a Valid osu! ID.")
+			} else {
+				s.ChannelMessageSend(m.ChannelID, commands.LinkDiscordAccount(player.GetUserById(idInt), m.Author))
 			}
-			s.ChannelMessageSend(m.ChannelID, commands.LinkDiscordAccount(player.GetUserById(idInt), m.Author))
+		} else if parts[0] == "help" {
+			s.ChannelMessageSendEmbed(m.ChannelID, commands.Help())
 		}
 
 	}

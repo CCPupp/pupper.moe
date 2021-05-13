@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/pupper.moe/internal/validations"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -13,8 +14,9 @@ func Ping() string {
 
 func Help() *discordgo.MessageEmbed {
 	return &discordgo.MessageEmbed{
-		Title:  "Commands:",
-		Fields: makeHelpFields(),
+		Title:       "List of Commands:",
+		Description: "[] notates optional fields, () are required fields, | notates an alternative usage for the same command",
+		Fields:      makeHelpFields(),
 	}
 }
 
@@ -50,12 +52,26 @@ func AssignAdmin(user player.User) string {
 }
 
 func LinkDiscordAccount(user player.User, discordUser *discordgo.User) string {
-	if user.ID != 0 {
+	if user.ID != 0 && user.Discord == discordUser.Username+"#"+discordUser.Discriminator {
 		player.SetUserDiscordID(user, discordUser.ID)
 		return user.Username + " is linked to " + discordUser.Mention() + "."
 	} else {
-		return "Invalid ID"
+		return "Invalid ID / ID not on userpage."
 	}
+}
+
+func GetStateLeaderboard(state string) *discordgo.MessageEmbed {
+	embed := discordgo.MessageEmbed{
+		Title: "Invalid State / Account Not Linked",
+	}
+	if validations.ValidateState(state) {
+		embed = discordgo.MessageEmbed{
+			Title:  state,
+			Fields: makeStateFields(state),
+		}
+		return &embed
+	}
+	return &embed
 }
 
 func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
@@ -80,7 +96,76 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 		Value:  strconv.Itoa(user.Statistics.Global_rank),
 		Inline: true,
 	}
-	fields = append(fields, &mode, &state, &stateRank, &globalRank)
+	badges := discordgo.MessageEmbedField{
+		Name:   "BWS Rank",
+		Value:  strconv.Itoa(player.GetBWSRank(user)),
+		Inline: true,
+	}
+	fields = append(fields, &mode, &state, &stateRank, &globalRank, &badges)
+	return fields
+}
+
+func makeStateFields(state string) []*discordgo.MessageEmbedField {
+	fields := []*discordgo.MessageEmbedField{}
+	users := player.GetUserJSON()
+	users = player.SortUsers(users)
+	player1 := discordgo.MessageEmbedField{}
+	player2 := discordgo.MessageEmbedField{}
+	player3 := discordgo.MessageEmbedField{}
+	player4 := discordgo.MessageEmbedField{}
+	player5 := discordgo.MessageEmbedField{}
+	count := 0
+	errorEmbed := discordgo.MessageEmbedField{
+		Name:   "Error",
+		Value:  "Something went wrong.",
+		Inline: true,
+	}
+	for i := 0; i < len(users.Users); i++ {
+		if users.Users[i].State == state {
+			count++
+			if count == 1 {
+				player1 = discordgo.MessageEmbedField{
+					Name:   strconv.Itoa(count),
+					Value:  users.Users[i].Username,
+					Inline: false,
+				}
+			}
+			if count == 2 {
+				player2 = discordgo.MessageEmbedField{
+					Name:   strconv.Itoa(count),
+					Value:  users.Users[i].Username,
+					Inline: false,
+				}
+			}
+			if count == 3 {
+				player3 = discordgo.MessageEmbedField{
+					Name:   strconv.Itoa(count),
+					Value:  users.Users[i].Username,
+					Inline: false,
+				}
+			}
+			if count == 4 {
+				player4 = discordgo.MessageEmbedField{
+					Name:   strconv.Itoa(count),
+					Value:  users.Users[i].Username,
+					Inline: false,
+				}
+			}
+			if count == 5 {
+				player5 = discordgo.MessageEmbedField{
+					Name:   strconv.Itoa(count),
+					Value:  users.Users[i].Username,
+					Inline: false,
+				}
+			}
+		}
+	}
+
+	if count == 0 {
+		fields = append(fields, &errorEmbed)
+	} else {
+		fields = append(fields, &player1, &player2, &player3, &player4, &player5)
+	}
 	return fields
 }
 
@@ -88,9 +173,24 @@ func makeHelpFields() []*discordgo.MessageEmbedField {
 	fields := []*discordgo.MessageEmbedField{}
 	ping := discordgo.MessageEmbedField{
 		Name:   "-ping",
-		Value:  "Pong!",
-		Inline: true,
+		Value:  "Pong! A good way to check if the website & bot are online.",
+		Inline: false,
 	}
-	fields = append(fields, &ping)
+	stats := discordgo.MessageEmbedField{
+		Name:   "-stats [@user | Discord ID | osu! ID] | -getuser",
+		Value:  "The stats command shows information about the user from my database. If the user has connected their discord account using -link they can be pulled by @ing them.",
+		Inline: false,
+	}
+	link := discordgo.MessageEmbedField{
+		Name:   "-link (osu ID)",
+		Value:  "Connects your discord account to your account on the website and verifies it with a checkmark. YOU MUST HAVE YOUR ACCOUNT ON YOUR OSU USERPAGE TO LINK.",
+		Inline: false,
+	}
+	state := discordgo.MessageEmbedField{
+		Name:   "-state [State] | -leaderboard | -lb",
+		Value:  "Shows the top 5 users from the specified state, if no state is specified your linked accounts state is used.",
+		Inline: false,
+	}
+	fields = append(fields, &ping, &stats, &link, &state)
 	return fields
 }
