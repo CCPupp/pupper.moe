@@ -251,4 +251,11 @@ ol {
         margin-top: -10%;
         padding-bottom: 15%;
     }
+
+    .main-right {
+        max-width: 60%;
+        margin-right: 10%;
+        margin-left: 10%;
+        margin-bottom: 20%;
+    }
 }

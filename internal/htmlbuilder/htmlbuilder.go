@@ -65,14 +65,14 @@ func CreateAllHTML(loop int) string {
 	finalString += `
 	<br>
 	<br>
-	<div class='flex-container black-font'>
+	<div class='flex-container'>
 	<ol>
 	<b>Total Users: ` + strconv.Itoa(len(users.Users)) + `</b><br><br>
 	<b>Total Verified Users: ` + player.GetTotalVerified() + `</b><br><br>`
 
 	for i := len(users.Users) - 1; i >= 0; i-- {
-		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='/states/" + users.Users[i].State + "' class='usercard black-font'>" + users.Users[i].Username + "</a>")
-		finalString += ("<b>State: " + users.Users[i].State + getValidation(users.Users[i]) + "</b></div></li>")
+		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='https://osu.ppy.sh/users/" + strconv.Itoa(users.Users[i].ID) + "' class='usercard'>" + users.Users[i].Username + "</a>")
+		finalString += ("<a href='/states/" + users.Users[i].State + "'> State: " + users.Users[i].State + getValidation(users.Users[i]) + "</a></div></li>")
 	}
 
 	discords := discord.GetDiscordJSON()
@@ -80,7 +80,7 @@ func CreateAllHTML(loop int) string {
 	finalString += `</ol><ol>`
 
 	for i := 0; i < len(discords.Discords); i++ {
-		finalString += `<a class="black-font" href=` + discords.Discords[i].Link + `> ` + discords.Discords[i].State + `'s Discord Server </a><br><br>`
+		finalString += `<a href=` + discords.Discords[i].Link + `> ` + discords.Discords[i].State + `'s Discord Server </a><br><br>`
 	}
 
 	finalString += `</div></body>`
@@ -141,18 +141,6 @@ func CreateStateHTML(w http.ResponseWriter, state, mode string, loop int) {
 
 }
 
-func FloatToString(input_num float64) string {
-	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', 2, 64)
-}
-
-func GetBackgroundText(bg player.User) string {
-	if bg.Background == "true" {
-		return "On"
-	}
-	return "Off"
-}
-
 func CreateOptions(user player.User) string {
 	finalString := (`<div class="settings-container player-container black-font">
 						<div class="user-settings">
@@ -161,7 +149,7 @@ func CreateOptions(user player.User) string {
 								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
 								<select id="bg">
-									<option value="` + user.Background + `" selected hidden>` + GetBackgroundText(user) + `</option>
+									<option value="` + user.Background + `" selected hidden>` + getBackgroundText(user) + `</option>
 									<option value="true">On</option>
 									<option value="false">Off</option>
 								</select>
@@ -258,9 +246,9 @@ func CreateUser(user player.User, rank int) string {
 								</div>
 								<h6>` + user.State + getValidation(user) + `</h6>
 								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
-								<h4>Total PP: ` + FloatToString(user.Statistics.Pp) + `</h4>
+								<h4>Total PP: ` + floatToString(user.Statistics.Pp) + `</h4>
 								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + getBWS(user) + `</h4>
-								<h4>Accuracy: ` + FloatToString(user.Statistics.Accuracy) + `</h4>
+								<h4>Accuracy: ` + floatToString(user.Statistics.Accuracy) + `</h4>
 								<h4>Playcount: ` + strconv.Itoa(user.Statistics.Play_count) + `</h4>
 							</div>
 						</div>
@@ -334,4 +322,16 @@ func getBWS(user player.User) string {
 	} else {
 		return ""
 	}
+}
+
+func floatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 2, 64)
+}
+
+func getBackgroundText(bg player.User) string {
+	if bg.Background == "true" {
+		return "On"
+	}
+	return "Off"
 }

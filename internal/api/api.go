@@ -34,6 +34,7 @@ type Token struct {
 	Refresh_token string `json:"refresh_token"`
 }
 
+// GetUser returns User with data from the osu! APIv2
 func GetUser(id string, token string) player.User {
 	url := "https://osu.ppy.sh/api/v2/users/" + id
 	req, err := http.NewRequest("GET", url, nil)
@@ -72,8 +73,9 @@ func GetUser(id string, token string) player.User {
 	return user
 }
 
-func GetMe(gamemode string, w http.ResponseWriter, r *http.Request, token string) player.User {
-	url := "https://osu.ppy.sh/api/v2/me/osu"
+// GetMe returns User with data from the osu! APIv2 using their default game mode
+func GetMe(token string) player.User {
+	url := "https://osu.ppy.sh/api/v2/me"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

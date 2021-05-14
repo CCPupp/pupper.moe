@@ -61,7 +61,6 @@ func LinkDiscordAccount(user player.User, discordUser *discordgo.User) string {
 	}
 }
 
-// TODO Add a way of seeing other pages of 5 people
 func GetStateLeaderboard(state string, page int) *discordgo.MessageEmbed {
 	embed := discordgo.MessageEmbed{
 		Title: "Invalid State / Account Not Linked",

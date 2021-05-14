@@ -37,7 +37,7 @@ func main() {
 		} else if r.URL.Path[1:4] == "all" {
 			fmt.Fprint(w, htmlbuilder.CreateAllHTML(1))
 		} else if r.URL.Path[1:5] == "user" {
-			fmt.Fprint(w, user(w, r))
+			fmt.Fprint(w, user(r))
 		} else if r.URL.Path[1:6] == "login" {
 			http.Redirect(w, r, "https://osu.ppy.sh/oauth/authorize?response_type=code&client_id="+strconv.Itoa(secret.OSU_CLIENT_ID)+"&redirect_uri="+secret.REDIRECT_URL+"/user&scope=public", http.StatusSeeOther)
 		} else if r.URL.Path[1:7] == "states" {
@@ -134,14 +134,13 @@ func main() {
 
 }
 
-func user(w http.ResponseWriter, r *http.Request) string {
+func user(r *http.Request) string {
 	token := api.GetUserToken(r.URL.Query().Get("code"))
-	id := api.GetMe("osu", w, r, token)
-	user := api.GetUser(strconv.Itoa(id.ID), token)
+	user := api.GetMe(token)
 	var localUser player.User
 	if player.CheckDuplicate(user.ID) {
 		localUser = player.GetUserById(user.ID)
-		player.OverwriteExisting(localUser, user)
+		player.OverwriteExistingUser(localUser, user)
 	} else {
 		player.WriteToUser(user)
 		localUser = player.GetUserById(user.ID)

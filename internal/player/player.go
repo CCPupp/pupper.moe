@@ -269,7 +269,7 @@ func WriteToUser(newUser User) {
 	ioutil.WriteFile("web/data/users.json", finalList, 0644)
 }
 
-func OverwriteExisting(existingUser User, pulledUser User) {
+func OverwriteExistingUser(existingUser User, pulledUser User) {
 	currentList := GetUserJSON()
 	var badge Badge
 	var badges []Badge
