@@ -98,8 +98,8 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 		Inline: true,
 	}
 	badges := discordgo.MessageEmbedField{
-		Name:   "BWS Rank",
-		Value:  strconv.Itoa(player.GetBWSRank(user)),
+		Name:   "Total Badges",
+		Value:  strconv.Itoa(len(user.Badges)),
 		Inline: true,
 	}
 	fields = append(fields, &mode, &state, &stateRank, &globalRank, &badges)

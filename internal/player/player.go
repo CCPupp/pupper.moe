@@ -143,7 +143,6 @@ func GetBWSRank(user User) int {
 		for i := 0; i < len(user.Badges); i++ {
 			total++
 		}
-		//Math.round(Math.pow(rank, Math.pow(0.9937, Math.pow(badges, 2)))).toLocaleString();
 		bwsRankFloat := math.Round(math.Pow((float64(user.Statistics.Global_rank)), math.Pow(0.9937, math.Pow(float64(total), 2))))
 		tempString := fmt.Sprintf("%f", bwsRankFloat)
 		parts := strings.Split(tempString, ".")
