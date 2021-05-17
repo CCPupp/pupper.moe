@@ -27,6 +27,7 @@ func doUpdate() {
 	for i := 0; i < len(users.Users); i++ {
 		time.Sleep(300 * time.Millisecond)
 		updateUser(users, i, clientToken)
+		player.BackupUserJSON()
 	}
 	IsUpdating = false
 	fmt.Println("Update Complete!")
