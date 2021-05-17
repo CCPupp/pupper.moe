@@ -11,12 +11,12 @@ import (
 	"github.com/CCPupp/pupper.moe/internal/player"
 )
 
-func BuildHTMLHeader(loop int) string {
+func BuildHTMLHeader(loop int, state string) string {
 	backString := "../"
 	finalBack := strings.Repeat(backString, loop)
 	var finalHeader string = `<!DOCTYPE html>
 	<html>
-	<title>State Ranking Leaderboard</title>
+	<title>` + state + ` Leaderboard</title>
 	<meta charset="UTF-8" />
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
@@ -60,7 +60,7 @@ func BuildHTMLNavbar() string {
 func CreateAllHTML(loop int) string {
 	users := player.GetUserJSON()
 
-	finalString := BuildHTMLHeader(loop)
+	finalString := BuildHTMLHeader(loop, "All Players")
 	finalString += BuildHTMLNavbar()
 	finalString += `
 	<br>
@@ -97,7 +97,7 @@ func CreateStateHTML(w http.ResponseWriter, state, mode string, loop int) {
 			discordString += `<a href="` + discords.Discords[i].Link + `"> Discord Server </a>`
 		}
 	}
-	fmt.Fprint(w, BuildHTMLHeader(loop))
+	fmt.Fprint(w, BuildHTMLHeader(loop, state))
 	users := player.GetUserJSON()
 
 	users = player.SortUsers(users)
@@ -154,16 +154,6 @@ func CreateOptions(user player.User) string {
 									<option value="false">Off</option>
 								</select>
 								<label>Background Image On/Off</label>
-								<br>
-								<br>
-								<select id="mode" disabled>
-									<option value="` + user.Playmode + `" selected hidden>` + user.Playmode + `</option>
-									<option value="osu">osu</option>
-									<option value="mania">mania</option>
-									<option value="taiko">taiko</option>
-									<option value="fruits">fruits</option>
-								</select>
-								<label>Gamemode Preference</label>
 								<br>
 								<br>
 								<select id="state">
@@ -247,7 +237,7 @@ func CreateUser(user player.User, rank int) string {
 								<h6>` + user.State + getValidation(user) + `</h6>
 								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
 								<h4>Total PP: ` + floatToString(user.Statistics.Pp) + `</h4>
-								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + getBWS(user) + `</h4>
+								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
 								<h4>Accuracy: ` + floatToString(user.Statistics.Accuracy) + `</h4>
 								<h4>Playcount: ` + strconv.Itoa(user.Statistics.Play_count) + `</h4>
 							</div>

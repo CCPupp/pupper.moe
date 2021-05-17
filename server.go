@@ -66,7 +66,6 @@ func main() {
 		}
 		state := r.FormValue("state")
 		bg := r.FormValue("bg")
-		//mode := r.FormValue("mode")
 		id := r.FormValue("id")
 		if id != "0" {
 			if bg == "true" || bg == "false" {
@@ -77,7 +76,6 @@ func main() {
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
 			}
-			//player.SetUserMode(mode, id)
 			idInt, _ := strconv.Atoi(id)
 			user := player.GetUserById(idInt)
 			fmt.Fprint(w, (htmlbuilder.CreateUser(user, 0)))
@@ -145,7 +143,7 @@ func user(r *http.Request) string {
 		player.WriteToUser(user)
 		localUser = player.GetUserById(user.ID)
 	}
-	finalString := htmlbuilder.BuildHTMLHeader(1)
+	finalString := htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username)
 	finalString += htmlbuilder.BuildHTMLNavbar()
 	finalString += htmlbuilder.CreateUser(localUser, 0)
 	finalString += htmlbuilder.CreateOptions(localUser)

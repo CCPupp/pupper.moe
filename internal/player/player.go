@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Player stores information about the player to parse onto the webpage
@@ -102,6 +103,18 @@ func GetUserJSON() Users {
 	json.Unmarshal(byteValue, &users)
 
 	return users
+}
+
+func BackupUserJSON() {
+	jsonFile, err := os.Open("web/data/users.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	ioutil.WriteFile("web/data/usersBACKUP"+time.Now().String()+".json", byteValue, 0644)
 }
 
 func SortUsers(list Users) Users {

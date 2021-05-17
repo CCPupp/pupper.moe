@@ -14,7 +14,7 @@ var IsUpdating = false
 func StartUpdate() {
 	for {
 		doUpdate()
-		time.Sleep(24 * time.Hour)
+		time.Sleep(8 * time.Hour)
 	}
 }
 
