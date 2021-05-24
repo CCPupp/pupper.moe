@@ -13,6 +13,7 @@ import (
 	"github.com/CCPupp/pupper.moe/internal/discord"
 	"github.com/CCPupp/pupper.moe/internal/htmlbuilder"
 	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/pupper.moe/internal/stats"
 	"github.com/CCPupp/pupper.moe/internal/updater"
 	"github.com/CCPupp/pupper.moe/internal/validations"
 
@@ -25,6 +26,7 @@ func main() {
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
+	go stats.StartStats()
 	go discord.StartBot()
 	// Handler points to available directories
 	http.Handle("/web/html", http.StripPrefix("/web/html", http.FileServer(http.Dir("web/html"))))
@@ -40,6 +42,11 @@ func main() {
 			fmt.Fprint(w, user(r))
 		} else if r.URL.Path[1:6] == "login" {
 			http.Redirect(w, r, "https://osu.ppy.sh/oauth/authorize?response_type=code&client_id="+strconv.Itoa(secret.OSU_CLIENT_ID)+"&redirect_uri="+secret.REDIRECT_URL+"/user&scope=public", http.StatusSeeOther)
+		} else if r.URL.Path[1:6] == "stats" {
+			fmt.Fprint(w, (htmlbuilder.BuildHTMLHeader(0, "stats")))
+			htmlbuilder.BuildHTMLNavbar()
+			htmlbuilder.CreateStats(w)
+
 		} else if r.URL.Path[1:7] == "states" {
 			if r.URL.Path[8:] != "" {
 				if r.URL.Path[len(r.URL.Path)-3:] == "osu" {

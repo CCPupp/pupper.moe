@@ -9,6 +9,7 @@ import (
 
 	"github.com/CCPupp/pupper.moe/internal/discord"
 	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/pupper.moe/internal/stats"
 )
 
 func BuildHTMLHeader(loop int, state string) string {
@@ -119,6 +120,11 @@ func CreateStateHTML(w http.ResponseWriter, state, mode string, loop int) {
 	<p id="result"></p>
 	<div class="playerlist">
 	`)
+
+	if discordString == "" {
+		fmt.Fprint(w, `<b style="align-self: center;">There is no discord server for this state, try asking a player if it's invite only!</b>`)
+	}
+
 	rank := 0
 	for i := 0; i < len(users.Users); i++ {
 		if mode == "all" {
@@ -139,6 +145,23 @@ func CreateStateHTML(w http.ResponseWriter, state, mode string, loop int) {
 	fmt.Fprint(w, `</div></body>`)
 	fmt.Fprint(w, BuildHTMLFooter())
 
+}
+
+func CreateStats(w http.ResponseWriter) {
+
+	fmt.Fprint(w, `<body>
+	<div class="navbar">
+		<a href="/">Home</a>
+	</div>
+	<br>`)
+
+	fmt.Fprint(w, `
+		<h4>Total Users: `+strconv.Itoa(stats.TotalUsers)+`
+	`)
+
+	fmt.Fprint(w, `
+		<h4>Total Verified: `+player.GetTotalVerified()+`
+	`)
 }
 
 func CreateOptions(user player.User) string {
@@ -304,14 +327,6 @@ func getBadges(user player.User) string {
 		finalString += `</div>`
 	}
 	return finalString
-}
-
-func getBWS(user player.User) string {
-	if user.Statistics.Global_rank != player.GetBWSRank(user) {
-		return ` | BWS: ` + strconv.Itoa(player.GetBWSRank(user))
-	} else {
-		return ""
-	}
 }
 
 func floatToString(input_num float64) string {
