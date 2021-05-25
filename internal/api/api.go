@@ -7,8 +7,10 @@ import (
 	"log"
 	"net/http"
 	"secret"
+	"strconv"
 	"time"
 
+	"github.com/CCPupp/pupper.moe/internal/achievement"
 	"github.com/CCPupp/pupper.moe/internal/player"
 )
 
@@ -34,8 +36,46 @@ type Token struct {
 	Refresh_token string `json:"refresh_token"`
 }
 
+// GetRecent returns 10 recent plays from given user ID
+func GetRecent(id int, token string) []achievement.Score {
+	url := "https://osu.ppy.sh/api/v2/users/" + (strconv.Itoa(id)) + "/scores/recent?include_fails=1"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	osuClient := http.Client{
+		Timeout: time.Second * 5, // Timeout after 5 seconds
+	}
+
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+
+	res, getErr := osuClient.Do(req)
+	if getErr != nil {
+		log.Fatal(getErr)
+	}
+
+	if res.Body != nil {
+		defer res.Body.Close()
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	var event []achievement.Score
+	jsonErr := json.Unmarshal(body, &event)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+	return event
+}
+
 // GetUser returns User with data from the osu! APIv2
-func GetUser(id string, token string) player.User {
+func GetUser(id, token string) player.User {
 	url := "https://osu.ppy.sh/api/v2/users/" + id
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

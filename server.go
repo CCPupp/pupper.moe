@@ -9,6 +9,7 @@ import (
 
 	"secret"
 
+	"github.com/CCPupp/pupper.moe/internal/achievement"
 	"github.com/CCPupp/pupper.moe/internal/api"
 	"github.com/CCPupp/pupper.moe/internal/discord"
 	"github.com/CCPupp/pupper.moe/internal/htmlbuilder"
@@ -142,6 +143,14 @@ func main() {
 func user(r *http.Request) string {
 	token := api.GetUserToken(r.URL.Query().Get("code"))
 	user := api.GetMe(token)
+	event := api.GetRecent(user.ID, token)
+	if achievement.GetAchi(user.ID).Id != user.ID {
+		achievement.NewAchi(achievement.Achi{
+			Id:    user.ID,
+			Stage: 0,
+		})
+	}
+	achievement.CheckCompletion(event)
 	var localUser player.User
 	if player.CheckDuplicate(user.ID) {
 		localUser = player.GetUserById(user.ID)

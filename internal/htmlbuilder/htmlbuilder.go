@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/CCPupp/pupper.moe/internal/achievement"
 	"github.com/CCPupp/pupper.moe/internal/discord"
 	"github.com/CCPupp/pupper.moe/internal/player"
 	"github.com/CCPupp/pupper.moe/internal/stats"
@@ -272,13 +273,19 @@ func CreateUser(user player.User, rank int) string {
 }
 
 func CreateAdminPanel(user player.User) string {
+	achi := achievement.GetAchi(user.ID)
 	finalString := (`<div class="settings-container player-container">
 						<div class="user-settings">
 							<div class="settings-info">
 								<p class="black-font">Admin Panel.</p>
 								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
-								
+								<h2 class="black-font">Overall Stage: ` + strconv.Itoa(achi.Stage) + `</h2>
+								<p class="black-font">Accuracy Stage: ` + strconv.Itoa(achi.AccuracyStage) + ` | ` + achi.AccuracyStageNext + `</p>
+								<p class="black-font">Precision Stage: ` + strconv.Itoa(achi.PrecisionStage) + ` | ` + achi.PrecisionStageNext + `</p>
+								<p class="black-font">Reading Stage: ` + strconv.Itoa(achi.ReadingStage) + ` | ` + achi.ReadingStageNext + `</p>
+								<p class="black-font">Speed Stage: ` + strconv.Itoa(achi.SpeedStage) + ` | ` + achi.SpeedStageNext + `</p>
+								<p class="black-font">Stamina Stage: ` + strconv.Itoa(achi.StaminaStage) + ` | ` + achi.StaminaStageNext + `</p>
 								<button id="adminupdate">Submit</button>
 							</div>
 						</div>`)
