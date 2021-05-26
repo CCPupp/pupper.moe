@@ -19,6 +19,7 @@ type Achi struct {
 	ReadingStage       int    `json:"reading_stage"`
 	SpeedStage         int    `json:"speed_stage"`
 	StaminaStage       int    `json:"stamina_stage"`
+	StageNext          string `json:"stage_next"`
 	AccuracyStageNext  string `json:"accuracy_stage_next"`
 	PrecisionStageNext string `json:"precision_stage_next"`
 	ReadingStageNext   string `json:"reading_stage_next"`
@@ -45,7 +46,14 @@ type Score struct {
 }
 
 type Beatmap struct {
-	URL string `json:"url"`
+	DifficultyRating float64 `json:"difficulty_rating"`
+	Id               int     `json:"id"`
+	Status           string  `json:"status"`
+	URL              string  `json:"url"`
+	AR               float64 `json:"ar"`
+	BPM              float64 `json:"bpm"`
+	CS               float64 `json:"cs"`
+	TotalLength      int     `json:"total_length"`
 }
 
 func CheckCompletion(recent []Score) {
@@ -64,23 +72,23 @@ func CheckCompletion(recent []Score) {
 					//Accuracy 1 -> 2
 					setStage(achi, 2, "acc", "SS Any Map > 500 combo")
 				}
-				if recent[i].Beatmap.URL == "" {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.CS >= .5 {
 					//Precision 1 -> 2
 					setStage(achi, 2, "prec", "WIP")
 				}
-				if recent[i].Beatmap.URL == "" {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.AR <= .8 {
 					//Reading 1 -> 2
 					setStage(achi, 2, "read", "WIP")
 				}
-				if recent[i].Beatmap.URL == "" {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.BPM >= .200 {
 					//Speed 1 -> 2
 					setStage(achi, 2, "speed", "WIP")
 				}
-				if recent[i].Beatmap.URL == "" {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.TotalLength >= 180 {
 					//Stamina 1 -> 2
 					setStage(achi, 2, "stam", "WIP")
 				}
-				if recent[i].Beatmap.URL == "" {
+				if achi.AccuracyStage+achi.PrecisionStage+achi.ReadingStage+achi.SpeedStage+achi.StaminaStage >= 10 {
 					//Total 1 -> 2
 					setStage(achi, 2, "total", "WIP")
 				}
@@ -129,12 +137,17 @@ func setTutorialDone(id int) {
 	for i := 0; i < len(currentList.Achis); i++ {
 		if currentList.Achis[i].Id == id {
 			currentList.Achis[i].Stage = 1
+			currentList.Achis[i].StageNext = "Get a total stage value of 10 or more."
 			currentList.Achis[i].AccuracyStage = 1
 			currentList.Achis[i].AccuracyStageNext = "99% acc on any map."
 			currentList.Achis[i].PrecisionStage = 1
+			currentList.Achis[i].PrecisionStageNext = "Complete a map with CS >= 5."
 			currentList.Achis[i].ReadingStage = 1
+			currentList.Achis[i].ReadingStageNext = "Complete a map with AR <= 8."
 			currentList.Achis[i].SpeedStage = 1
+			currentList.Achis[i].SpeedStageNext = "Complete a map with a BPM > 200."
 			currentList.Achis[i].StaminaStage = 1
+			currentList.Achis[i].StaminaStageNext = "Complete a map longer than 3 minutes."
 		}
 	}
 
@@ -157,8 +170,9 @@ func NewAchi(newUser Achi) {
 	currentList := GetAchiJSON()
 
 	currentList.Achis = append(currentList.Achis, Achi{
-		Id:    newUser.Id,
-		Stage: 0,
+		Id:        newUser.Id,
+		Stage:     0,
+		StageNext: "Play the first map ever created.",
 	})
 
 	finalList, _ := json.Marshal(currentList)

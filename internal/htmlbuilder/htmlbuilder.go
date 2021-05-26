@@ -165,12 +165,12 @@ func CreateStats(w http.ResponseWriter) {
 	`)
 }
 
-func CreateOptions(user player.User) string {
+func CreateOptions(user player.User, token string) string {
 	finalString := (`<div class="settings-container player-container black-font">
 						<div class="user-settings">
 							<div class="settings-info">
 								<p class="black-font">Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
-								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
+								<input type="hidden" id="userid" value="` + token + `"/>
 								<br>
 								<select id="bg">
 									<option value="` + user.Background + `" selected hidden>` + getBackgroundText(user) + `</option>
@@ -274,21 +274,27 @@ func CreateUser(user player.User, rank int) string {
 
 func CreateAdminPanel(user player.User) string {
 	achi := achievement.GetAchi(user.ID)
-	finalString := (`<div class="settings-container player-container">
+	finalString := (`<div class="settings-container player-container" id="testing-panel">
 						<div class="user-settings">
 							<div class="settings-info">
-								<p class="black-font">Admin Panel.</p>
+								<p class="black-font">Testing Panel.</p>
 								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
 								<br>
-								<h2 class="black-font">Overall Stage: ` + strconv.Itoa(achi.Stage) + `</h2>
-								<p class="black-font">Accuracy Stage: ` + strconv.Itoa(achi.AccuracyStage) + ` | ` + achi.AccuracyStageNext + `</p>
-								<p class="black-font">Precision Stage: ` + strconv.Itoa(achi.PrecisionStage) + ` | ` + achi.PrecisionStageNext + `</p>
-								<p class="black-font">Reading Stage: ` + strconv.Itoa(achi.ReadingStage) + ` | ` + achi.ReadingStageNext + `</p>
-								<p class="black-font">Speed Stage: ` + strconv.Itoa(achi.SpeedStage) + ` | ` + achi.SpeedStageNext + `</p>
-								<p class="black-font">Stamina Stage: ` + strconv.Itoa(achi.StaminaStage) + ` | ` + achi.StaminaStageNext + `</p>
-								<button id="adminupdate">Submit</button>
+								<h2 class="black-font">Overall Stage: ` + strconv.Itoa(achi.Stage) + ` | ` + achi.StageNext + `</h2>
+								`)
+	if achi.Stage > 0 {
+		finalString += (`
+									<p class="black-font">Accuracy Stage: ` + strconv.Itoa(achi.AccuracyStage) + ` | ` + achi.AccuracyStageNext + `</p>
+									<p class="black-font">Precision Stage: ` + strconv.Itoa(achi.PrecisionStage) + ` | ` + achi.PrecisionStageNext + `</p>
+									<p class="black-font">Reading Stage: ` + strconv.Itoa(achi.ReadingStage) + ` | ` + achi.ReadingStageNext + `</p>
+									<p class="black-font">Speed Stage: ` + strconv.Itoa(achi.SpeedStage) + ` | ` + achi.SpeedStageNext + `</p>
+									<p class="black-font">Stamina Stage: ` + strconv.Itoa(achi.StaminaStage) + ` | ` + achi.StaminaStageNext + `</p>
+								`)
+	}
+	finalString += (`<button id="adminupdate">Check Stage Completion</button>
 							</div>
 						</div>`)
+
 	return finalString
 }
 

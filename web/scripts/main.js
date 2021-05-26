@@ -37,3 +37,20 @@ $(document).ready(function() {
         });
     });
 });
+
+$(document).ready(function() {
+    $("#adminupdate").on('click', function() {
+        var id = $("#userid").val();
+        $.ajax({
+            url: "/adminUpdate",
+            method: "GET",
+            contentType: "application/x-www-form-urlencoded",
+            data: {
+                id: id
+            },
+            success: function(data) {
+                $("#testing-panel").html(data);
+            },
+        });
+    });
+});

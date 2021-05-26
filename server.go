@@ -74,17 +74,18 @@ func main() {
 		}
 		state := r.FormValue("state")
 		bg := r.FormValue("bg")
-		id := r.FormValue("id")
-		if id != "0" {
+		token := r.FormValue("id")
+		user := api.GetMe(token)
+		if user.ID != 0 {
 			if bg == "true" || bg == "false" {
-				player.SetUserBg(bg, id)
+				player.SetUserBg(bg, strconv.Itoa(user.ID))
 			}
 			if validations.ValidateState(state) {
-				player.SetUserState(state, id)
+				player.SetUserState(state, strconv.Itoa(user.ID))
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
 			}
-			idInt, _ := strconv.Atoi(id)
+			idInt, _ := strconv.Atoi(strconv.Itoa(user.ID))
 			user := player.GetUserById(idInt)
 			fmt.Fprint(w, (htmlbuilder.CreateUser(user, 0)))
 		} else {
@@ -120,6 +121,15 @@ func main() {
 			fmt.Fprint(w, "<h2>User Already Exists.</h2>")
 		}
 
+	})
+
+	http.HandleFunc("/adminUpdate", func(w http.ResponseWriter, r *http.Request) {
+		token := r.FormValue("id")
+		user := api.GetMe(token)
+		event := api.GetRecent(user.ID, token)
+		localUser := player.GetUserById(user.ID)
+		achievement.CheckCompletion(event)
+		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
 	})
 
 	//Serves local webpage for testing
@@ -162,7 +172,7 @@ func user(r *http.Request) string {
 	finalString := htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username)
 	finalString += htmlbuilder.BuildHTMLNavbar()
 	finalString += htmlbuilder.CreateUser(localUser, 0)
-	finalString += htmlbuilder.CreateOptions(localUser)
+	finalString += htmlbuilder.CreateOptions(localUser, token)
 	if localUser.Admin {
 		finalString += htmlbuilder.CreateAdminPanel(localUser)
 	}
