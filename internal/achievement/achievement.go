@@ -72,15 +72,15 @@ func CheckCompletion(recent []Score) {
 					//Accuracy 1 -> 2
 					setStage(achi, 2, "acc", "SS Any Map > 500 combo")
 				}
-				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.CS >= .5 {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.CS >= 5 {
 					//Precision 1 -> 2
 					setStage(achi, 2, "prec", "WIP")
 				}
-				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.AR <= .8 {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.AR <= 8 {
 					//Reading 1 -> 2
 					setStage(achi, 2, "read", "WIP")
 				}
-				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.BPM >= .200 {
+				if recent[i].Beatmap.URL != "" && recent[i].Beatmap.BPM >= 200 {
 					//Speed 1 -> 2
 					setStage(achi, 2, "speed", "WIP")
 				}
@@ -88,7 +88,7 @@ func CheckCompletion(recent []Score) {
 					//Stamina 1 -> 2
 					setStage(achi, 2, "stam", "WIP")
 				}
-				if achi.AccuracyStage+achi.PrecisionStage+achi.ReadingStage+achi.SpeedStage+achi.StaminaStage >= 10 {
+				if achi.AccuracyStage+achi.PrecisionStage+achi.ReadingStage+achi.SpeedStage+achi.StaminaStage >= 8 {
 					//Total 1 -> 2
 					setStage(achi, 2, "total", "WIP")
 				}
@@ -137,7 +137,7 @@ func setTutorialDone(id int) {
 	for i := 0; i < len(currentList.Achis); i++ {
 		if currentList.Achis[i].Id == id {
 			currentList.Achis[i].Stage = 1
-			currentList.Achis[i].StageNext = "Get a total stage value of 10 or more."
+			currentList.Achis[i].StageNext = "Collect a stage total value of 8 or higher."
 			currentList.Achis[i].AccuracyStage = 1
 			currentList.Achis[i].AccuracyStageNext = "99% acc on any map."
 			currentList.Achis[i].PrecisionStage = 1
