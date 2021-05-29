@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -18,6 +20,24 @@ func Help() *discordgo.MessageEmbed {
 		Title:       "List of Commands:",
 		Description: "[] notates optional fields, () are required fields, | notates an alternative usage for the same command",
 		Fields:      makeHelpFields(),
+	}
+}
+
+func Dump() *discordgo.MessageSend {
+	users := player.GetUserJSON()
+	var data discordgo.File
+	f, _ := os.Create("dump.txt")
+	defer f.Close()
+	for i := 0; i < len(users.Users); i++ {
+		_, err := f.WriteString(users.Users[i].Username + "\n")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	data.Reader, _ = os.Open("dump.txt")
+	data.Name = "List of all usernames.txt"
+	return &discordgo.MessageSend{
+		File: &data,
 	}
 }
 

@@ -110,6 +110,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(parts[1]))
 				}
 			}
+			// There 100% is a better way of writing this but I think this covers all possible inputs
 		} else if parts[0] == "state" || parts[0] == "leaderboard" || parts[0] == "lb" {
 			if len(parts) == 1 {
 				// print page 1 of user's state
@@ -152,6 +153,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		} else if parts[0] == "help" {
 			s.ChannelMessageSendEmbed(m.ChannelID, commands.Help())
+		} else if parts[0] == "dump" {
+			author := player.GetUserByDiscordId(m.Author.ID)
+			if author.Admin {
+				s.ChannelMessageSendComplex(m.ChannelID, commands.Dump())
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "Only admins can run this command.")
+			}
 		}
 
 	}
