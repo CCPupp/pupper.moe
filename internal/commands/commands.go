@@ -29,7 +29,7 @@ func Dump() *discordgo.MessageSend {
 	f, _ := os.Create("dump.txt")
 	defer f.Close()
 	for i := 0; i < len(users.Users); i++ {
-		_, err := f.WriteString(users.Users[i].Username + ", ")
+		_, err := f.WriteString("\"" + users.Users[i].Username + "\", ")
 		if err != nil {
 			log.Fatal(err)
 		}
