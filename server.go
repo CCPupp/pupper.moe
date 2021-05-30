@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"secret"
 
@@ -40,7 +41,7 @@ func main() {
 		} else if r.URL.Path[1:4] == "all" {
 			fmt.Fprint(w, htmlbuilder.CreateAllHTML(1))
 		} else if r.URL.Path[1:5] == "user" {
-			fmt.Fprint(w, user(r))
+			user(w, r)
 		} else if r.URL.Path[1:6] == "login" {
 			http.Redirect(w, r, "https://osu.ppy.sh/oauth/authorize?response_type=code&client_id="+strconv.Itoa(secret.OSU_CLIENT_ID)+"&redirect_uri="+secret.REDIRECT_URL+"/user&scope=public", http.StatusSeeOther)
 		} else if r.URL.Path[1:6] == "stats" {
@@ -150,10 +151,20 @@ func main() {
 
 }
 
-func user(r *http.Request) string {
+func user(w http.ResponseWriter, r *http.Request) {
 	token := api.GetUserToken(r.URL.Query().Get("code"))
 	user := api.GetMe(token)
-	//event := api.GetRecent(user.ID, token)
+
+	if user.Username == "" {
+		cookie, _ := r.Cookie("Token")
+		user = api.GetMe(cookie.Value)
+	} else {
+		expiration := time.Now().Add(365 * 24 * time.Hour)
+		cookie := http.Cookie{Name: "Token", Value: token, Expires: expiration}
+		http.SetCookie(w, &cookie)
+	}
+
+	// event := api.GetRecent(user.ID, token)
 	// if achievement.GetAchi(user.ID).Id != user.ID {
 	// 	achievement.NewAchi(achievement.Achi{
 	// 		Id:    user.ID,
@@ -169,15 +180,14 @@ func user(r *http.Request) string {
 		player.WriteToUser(user)
 		localUser = player.GetUserById(user.ID)
 	}
-	finalString := htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username)
-	finalString += htmlbuilder.BuildHTMLNavbar()
-	finalString += htmlbuilder.CreateUser(localUser, 0)
-	finalString += htmlbuilder.CreateOptions(localUser, token)
+	fmt.Fprint(w, htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username))
+	fmt.Fprint(w, htmlbuilder.BuildHTMLNavbar())
+	fmt.Fprint(w, htmlbuilder.CreateUser(localUser, 0))
+	fmt.Fprint(w, htmlbuilder.CreateOptions(localUser, token))
 	if localUser.Admin {
-		finalString += htmlbuilder.CreateAdminPanel(localUser)
+		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
 	}
-	finalString += htmlbuilder.BuildHTMLFooter()
-	return finalString
+	fmt.Fprint(w, htmlbuilder.BuildHTMLFooter())
 }
 
 func createUserFromId(id string, state string) {
