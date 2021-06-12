@@ -159,7 +159,8 @@ func user(w http.ResponseWriter, r *http.Request) {
 		cookie, _ := r.Cookie("Token")
 		user = api.GetMe(cookie.Value)
 	} else {
-		expiration := time.Now().Add(365 * 24 * time.Hour)
+		// Lasts same amount of time as an osu token
+		expiration := time.Now().Add(999999 * time.Hour)
 		cookie := http.Cookie{Name: "Token", Value: token, Expires: expiration}
 		http.SetCookie(w, &cookie)
 	}
