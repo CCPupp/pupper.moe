@@ -10,3 +10,5 @@ certs/cert.pem
 certs/key.pem
 web/data/achi.json
 dump.txt
+*.json
+server

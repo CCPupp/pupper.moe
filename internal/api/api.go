@@ -45,7 +45,7 @@ func GetRecent(id int, token string) []achievement.Score {
 	}
 
 	osuClient := http.Client{
-		Timeout: time.Second * 5, // Timeout after 5 seconds
+		Timeout: time.Second * 30, // Timeout after 30 seconds
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
