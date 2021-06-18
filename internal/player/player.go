@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
 	"os"
 	"sort"
@@ -388,7 +389,10 @@ func OverwriteExistingUser(existingUser User, pulledUser User) {
 	// now Marshal it
 	finalList, _ := json.Marshal(currentList)
 
-	ioutil.WriteFile("web/data/users.json", finalList, 0644)
+	err := ioutil.WriteFile("web/data/users.json", finalList, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func GetUserStateRank(id int, state string) int {
