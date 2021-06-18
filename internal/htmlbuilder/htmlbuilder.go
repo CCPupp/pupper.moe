@@ -246,7 +246,7 @@ func CreateOptions(user player.User, token string) string {
 									<option value="North">North</option>
 									<option value="South">South</option>
 								</select>
-								<label>(Canifornia Only) North / South</label>
+								<label>(California Only) North / South</label>
 								<br>
 								<br>
 								<button id="update">Submit</button>
