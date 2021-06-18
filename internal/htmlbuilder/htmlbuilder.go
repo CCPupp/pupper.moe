@@ -31,7 +31,7 @@ func BuildHTMLHeader(loop int, state string) string {
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="State Leaderboard" />
 	<meta property="og:description" content="A leaderboard for osu players split into each state" />
-	<meta property="og:url" content="https://states.osutools" />
+	<meta property="og:url" content="https://states.osutools.com" />
 	<meta property="og:image" content="full thumbnail path" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
