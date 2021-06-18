@@ -10,14 +10,12 @@ import (
 
 	"secret"
 
-	"github.com/CCPupp/pupper.moe/internal/achievement"
-	"github.com/CCPupp/pupper.moe/internal/api"
-	"github.com/CCPupp/pupper.moe/internal/discord"
-	"github.com/CCPupp/pupper.moe/internal/htmlbuilder"
-	"github.com/CCPupp/pupper.moe/internal/player"
-	"github.com/CCPupp/pupper.moe/internal/stats"
-	"github.com/CCPupp/pupper.moe/internal/updater"
-	"github.com/CCPupp/pupper.moe/internal/validations"
+	"github.com/CCPupp/states.osutools/internal/api"
+	"github.com/CCPupp/states.osutools/internal/discord"
+	"github.com/CCPupp/states.osutools/internal/htmlbuilder"
+	"github.com/CCPupp/states.osutools/internal/player"
+	"github.com/CCPupp/states.osutools/internal/updater"
+	"github.com/CCPupp/states.osutools/internal/validations"
 
 	_ "github.com/bmizerany/pq"
 )
@@ -28,7 +26,7 @@ func main() {
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
-	go stats.StartStats()
+	// go stats.StartStats()
 	go discord.StartBot()
 	// Handler points to available directories
 	http.Handle("/web/html", http.StripPrefix("/web/html", http.FileServer(http.Dir("web/html"))))
@@ -52,15 +50,19 @@ func main() {
 		} else if r.URL.Path[1:7] == "states" {
 			if r.URL.Path[8:] != "" {
 				if r.URL.Path[len(r.URL.Path)-3:] == "osu" {
-					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-4], "osu", 2)
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-4], "", "osu", 2)
 				} else if r.URL.Path[len(r.URL.Path)-5:] == "mania" {
-					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "mania", 2)
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "", "mania", 2)
 				} else if r.URL.Path[len(r.URL.Path)-5:] == "catch" {
-					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "fruits", 2)
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "", "fruits", 2)
 				} else if r.URL.Path[len(r.URL.Path)-5:] == "taiko" {
-					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "taiko", 2)
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:len(r.URL.Path)-6], "", "taiko", 2)
+				} else if r.URL.Path[len(r.URL.Path)-5:] == "North" && r.URL.Path[8:len(r.URL.Path)-6] == "California" {
+					htmlbuilder.CreateStateHTML(w, "California", "North", "all", 2)
+				} else if r.URL.Path[len(r.URL.Path)-5:] == "South" && r.URL.Path[8:len(r.URL.Path)-6] == "California" {
+					htmlbuilder.CreateStateHTML(w, "California", "South", "all", 2)
 				} else {
-					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:], "all", 1)
+					htmlbuilder.CreateStateHTML(w, r.URL.Path[8:], "", "all", 1)
 				}
 			}
 		} else {
@@ -74,6 +76,7 @@ func main() {
 			http.Error(w, fmt.Sprintf("error parsing url %v", err), 500)
 		}
 		state := r.FormValue("state")
+		advstate := r.FormValue("adv")
 		bg := r.FormValue("bg")
 		token := r.FormValue("id")
 		user := api.GetMe(token)
@@ -83,6 +86,7 @@ func main() {
 			}
 			if validations.ValidateState(state) {
 				player.SetUserState(state, strconv.Itoa(user.ID))
+				player.SetUserAdvState(advstate, strconv.Itoa(user.ID))
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
 			}
@@ -127,9 +131,9 @@ func main() {
 	http.HandleFunc("/adminUpdate", func(w http.ResponseWriter, r *http.Request) {
 		token := r.FormValue("id")
 		user := api.GetMe(token)
-		event := api.GetRecent(user.ID, token)
+		//event := api.GetRecent(user.ID, token)
 		localUser := player.GetUserById(user.ID)
-		achievement.CheckCompletion(event)
+		//achievement.CheckCompletion(event)
 		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
 	})
 
@@ -184,9 +188,9 @@ func user(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, htmlbuilder.BuildHTMLNavbar())
 	fmt.Fprint(w, htmlbuilder.CreateUser(localUser, 0))
 	fmt.Fprint(w, htmlbuilder.CreateOptions(localUser, token))
-	if localUser.Admin {
-		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
-	}
+	//if localUser.Admin {
+	//fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
+	//}
 	fmt.Fprint(w, htmlbuilder.BuildHTMLFooter())
 }
 

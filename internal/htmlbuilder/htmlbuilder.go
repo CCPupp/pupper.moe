@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CCPupp/pupper.moe/internal/achievement"
-	"github.com/CCPupp/pupper.moe/internal/discord"
-	"github.com/CCPupp/pupper.moe/internal/player"
-	"github.com/CCPupp/pupper.moe/internal/stats"
+	"github.com/CCPupp/states.osutools/internal/achievement"
+	"github.com/CCPupp/states.osutools/internal/discord"
+	"github.com/CCPupp/states.osutools/internal/player"
+	"github.com/CCPupp/states.osutools/internal/stats"
 )
 
 func BuildHTMLHeader(loop int, state string) string {
@@ -31,7 +31,7 @@ func BuildHTMLHeader(loop int, state string) string {
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="State Leaderboard" />
 	<meta property="og:description" content="A leaderboard for osu players split into each state" />
-	<meta property="og:url" content="https://pupper.moe" />
+	<meta property="og:url" content="https://states.osutools" />
 	<meta property="og:image" content="full thumbnail path" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -91,7 +91,7 @@ func CreateAllHTML(loop int) string {
 	return finalString
 }
 
-func CreateStateHTML(w http.ResponseWriter, state, mode string, loop int) {
+func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop int) {
 	discords := discord.GetDiscordJSON()
 	discordString := ""
 	for i := 0; i < len(discords.Discords); i++ {
@@ -130,8 +130,13 @@ func CreateStateHTML(w http.ResponseWriter, state, mode string, loop int) {
 	for i := 0; i < len(users.Users); i++ {
 		if mode == "all" {
 			if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) {
-				rank++
-				fmt.Fprint(w, CreateUser(users.Users[i], 0))
+				if (advstate != "") && users.Users[i].AdvState == advstate {
+					rank++
+					fmt.Fprint(w, CreateUser(users.Users[i], 0))
+				} else if advstate == "" {
+					rank++
+					fmt.Fprint(w, CreateUser(users.Users[i], 0))
+				}
 			}
 		} else {
 			if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) && (users.Users[i].Playmode == mode) {
@@ -234,6 +239,14 @@ func CreateOptions(user player.User, token string) string {
 									<option value="Wyoming">Wyoming</option>
 								</select>	
 								<label>State Selection</label>
+								<br>
+								<br>
+								<select id="adv">
+									<option value="` + user.AdvState + `" selected hidden>` + user.AdvState + `</option>
+									<option value="North">North</option>
+									<option value="South">South</option>
+								</select>
+								<label>(Canifornia Only) North / South</label>
 								<br>
 								<br>
 								<button id="update">Submit</button>

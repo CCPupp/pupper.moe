@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/CCPupp/pupper.moe/internal/api"
-	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/states.osutools/internal/api"
+	"github.com/CCPupp/states.osutools/internal/player"
 )
 
 var IsUpdating = false

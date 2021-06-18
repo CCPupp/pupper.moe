@@ -3,7 +3,7 @@ package stats
 import (
 	"time"
 
-	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/states.osutools/internal/player"
 )
 
 var StatsRunning = false

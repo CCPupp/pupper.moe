@@ -1,4 +1,4 @@
-# pupper.moe
+# states.osutools
 
 ## Goals
 
@@ -7,7 +7,7 @@ I want to create a place where users can compare their stats with others and dis
 ## Setup
 
 * Install Go
-* Clone this repository to ("C:/Users/Username/go/src/github.com/CCPupp/pupper.moe")
+* Clone this repository to ("C:/Users/Username/go/src/github.com/CCPupp/states.osutools")
 * Fill out 'secret.go' with all relevant information
 * Take the 'secret.go' file and add it to your GoPath ("C:/Go/src/secret/secret.go")
 * Run the server with "go run server.go"

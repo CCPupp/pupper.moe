@@ -12,8 +12,8 @@ import (
 
 	"secret"
 
-	"github.com/CCPupp/pupper.moe/internal/commands"
-	"github.com/CCPupp/pupper.moe/internal/player"
+	"github.com/CCPupp/states.osutools/internal/commands"
+	"github.com/CCPupp/states.osutools/internal/player"
 	"github.com/bwmarrin/discordgo"
 )
 

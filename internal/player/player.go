@@ -27,6 +27,7 @@ type User struct {
 	Badges         []Badge   `json:"badges"`
 	// These items are not pulled from the osu!api and instead are stored locally.
 	State      string    `json:"state"`
+	AdvState   string    `json:"advstate"`
 	Background string    `json:"background"`
 	Locks      Lock_info `json:"locks"`
 	Admin      bool      `json:"admin"`
@@ -206,6 +207,20 @@ func SetUserState(state string, id string) {
 	ioutil.WriteFile("web/data/users.json", finalList, 0644)
 }
 
+func SetUserAdvState(advstate string, id string) {
+	currentList := GetUserJSON()
+
+	for i := 0; i < len(currentList.Users); i++ {
+		if strconv.Itoa(currentList.Users[i].ID) == id {
+			currentList.Users[i].AdvState = advstate
+		}
+	}
+
+	finalList, _ := json.Marshal(currentList)
+
+	ioutil.WriteFile("web/data/users.json", finalList, 0644)
+}
+
 func SetUserBg(bg string, id string) {
 	currentList := GetUserJSON()
 
@@ -303,6 +318,7 @@ func WriteToUser(newUser User) {
 		ReplaysWatched: newUser.ReplaysWatched,
 		Statistics:     stats,
 		State:          newUser.State,
+		AdvState:       newUser.AdvState,
 		Background:     newUser.Background,
 		Locks:          newUser.Locks,
 		Admin:          newUser.Admin,
@@ -355,6 +371,7 @@ func OverwriteExistingUser(existingUser User, pulledUser User) {
 		ReplaysWatched: pulledUser.ReplaysWatched,
 		Statistics:     stats,
 		State:          existingUser.State,
+		AdvState:       existingUser.AdvState,
 		Background:     existingUser.Background,
 		Locks:          existingUser.Locks,
 		Admin:          existingUser.Admin,

@@ -1,5 +1,6 @@
 $(document).ready(function() {
     $("#update").on('click', function() {
+        var adv = $("#adv").val();
         var bg = $("#bg").val();
         var state = $("#state").val();
         var id = $("#userid").val();
@@ -11,6 +12,7 @@ $(document).ready(function() {
                 bg: bg,
                 state: state,
                 id: id,
+                adv: adv,
             },
             success: function(data) {
                 $("#response").html(data);

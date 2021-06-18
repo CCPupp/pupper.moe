@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CCPupp/pupper.moe/internal/player"
-	"github.com/CCPupp/pupper.moe/internal/validations"
+	"github.com/CCPupp/states.osutools/internal/player"
+	"github.com/CCPupp/states.osutools/internal/validations"
 	"github.com/bwmarrin/discordgo"
 )
 
