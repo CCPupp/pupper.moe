@@ -1,7 +1,6 @@
 package updater
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -36,11 +35,6 @@ func doUpdate() {
 }
 
 func updateUser(users player.Users, i int, clientToken string) {
-	defer func() {
-		if recover() != nil {
-			_ = errors.New("Something went wrong.")
-		}
-	}()
 	updatedUser := api.GetUser(strconv.Itoa(users.Users[i].ID), clientToken)
 	player.OverwriteExistingUser(player.GetUserById(users.Users[i].ID), updatedUser)
 }

@@ -391,7 +391,7 @@ func OverwriteExistingUser(existingUser User, pulledUser User) {
 
 	err := ioutil.WriteFile("web/data/users.json", finalList, 0644)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 
