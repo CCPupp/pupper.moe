@@ -102,10 +102,10 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, commands.Ping())
 		} else if parts[0] == "getuser" || parts[0] == "stats" {
 			if len(parts) == 1 {
-				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.GetUserByDiscordId(m.Author.ID).ID)))
+				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.NewGetUserByDiscordId(m.Author.ID).ID)))
 			} else {
 				if strings.HasPrefix(parts[1], "<@!") {
-					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.GetUserByDiscordId(strings.Trim(parts[1], "<@!>")).ID)))
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(strconv.Itoa(player.NewGetUserByDiscordId(strings.Trim(parts[1], "<@!>")).ID)))
 				} else {
 					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetUser(parts[1]))
 				}
@@ -114,11 +114,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else if parts[0] == "state" || parts[0] == "leaderboard" || parts[0] == "lb" {
 			if len(parts) == 1 {
 				// print page 1 of user's state
-				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.GetUserByDiscordId(m.Author.ID).State, 1))
+				s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.NewGetUserByDiscordId(m.Author.ID).State, 1))
 			} else if len(parts) == 2 {
 				if page, err := strconv.Atoi(parts[1]); err == nil {
 					// print page X of user's state
-					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.GetUserByDiscordId(m.Author.ID).State, page))
+					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(player.NewGetUserByDiscordId(m.Author.ID).State, page))
 				} else {
 					// print page 1 of given state
 					s.ChannelMessageSendEmbed(m.ChannelID, commands.GetStateLeaderboard(parts[1], 1))
@@ -140,7 +140,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		} else if parts[0] == "setadmin" && length > 1 {
 			if m.Author.ID == adminID {
 				idInt, _ := strconv.Atoi(parts[1])
-				s.ChannelMessageSend(m.ChannelID, commands.AssignAdmin(player.GetUserById(idInt)))
+				s.ChannelMessageSend(m.ChannelID, commands.AssignAdmin(player.NewGetUserById(idInt)))
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "Only ponpar can run this command.")
 			}
@@ -149,12 +149,12 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				s.ChannelMessageSend(m.ChannelID, "Not a Valid osu! ID.")
 			} else {
-				s.ChannelMessageSend(m.ChannelID, commands.LinkDiscordAccount(player.GetUserById(idInt), m.Author))
+				s.ChannelMessageSend(m.ChannelID, commands.LinkDiscordAccount(player.NewGetUserById(idInt), m.Author))
 			}
 		} else if parts[0] == "help" {
 			s.ChannelMessageSendEmbed(m.ChannelID, commands.Help())
 		} else if parts[0] == "dump" {
-			author := player.GetUserByDiscordId(m.Author.ID)
+			author := player.NewGetUserByDiscordId(m.Author.ID)
 			if author.Admin {
 				s.ChannelMessageSendComplex(m.ChannelID, commands.Dump())
 			} else {

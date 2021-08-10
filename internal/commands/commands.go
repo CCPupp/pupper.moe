@@ -24,12 +24,11 @@ func Help() *discordgo.MessageEmbed {
 }
 
 func Dump() *discordgo.MessageSend {
-	users := player.GetUserJSON()
 	var data discordgo.File
 	f, _ := os.Create("dump.txt")
 	defer f.Close()
-	for i := 0; i < len(users.Users); i++ {
-		_, err := f.WriteString("'" + users.Users[i].Username + "', ")
+	for i := 0; i < len(player.UserList); i++ {
+		_, err := f.WriteString("'" + player.UserList[i].Username + "', ")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -46,7 +45,7 @@ func GetUser(id string) *discordgo.MessageEmbed {
 		Title: "Invalid ID",
 	}
 	if idInt, err := strconv.Atoi(id); err == nil {
-		user := player.GetUserById(idInt)
+		user := player.NewGetUserById(idInt)
 		if user.ID != 0 {
 			embed = discordgo.MessageEmbed{
 				Title:  user.Username,
@@ -65,7 +64,7 @@ func GetUser(id string) *discordgo.MessageEmbed {
 
 func AssignAdmin(user player.User) string {
 	if user.ID != 0 {
-		player.SetUserAdmin(user)
+		player.NewSetUserAdmin(user)
 		return user.Username + " is now an admin."
 	} else {
 		return "Invalid ID"
@@ -74,7 +73,7 @@ func AssignAdmin(user player.User) string {
 
 func LinkDiscordAccount(user player.User, discordUser *discordgo.User) string {
 	if user.ID != 0 && user.Discord == discordUser.Username+"#"+discordUser.Discriminator {
-		player.SetUserDiscordID(user, discordUser.ID)
+		player.NewSetUserDiscordID(user, discordUser.ID)
 		return user.Username + " is linked to " + discordUser.Mention() + "."
 	} else {
 		return "Invalid ID / ID not on userpage."
@@ -109,7 +108,7 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 	}
 	stateRank := discordgo.MessageEmbedField{
 		Name:   "State Rank",
-		Value:  strconv.Itoa(player.GetUserStateRank(user.ID, user.State)),
+		Value:  strconv.Itoa(player.NewGetUserStateRank(user.ID, user.State)),
 		Inline: true,
 	}
 	globalRank := discordgo.MessageEmbedField{
@@ -128,8 +127,7 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 
 func makeStateFields(state string, page int) []*discordgo.MessageEmbedField {
 	fields := []*discordgo.MessageEmbedField{}
-	users := player.GetUserJSON()
-	users = player.SortUsers(users)
+	users := player.NewSortUsers()
 	player1 := discordgo.MessageEmbedField{}
 	player2 := discordgo.MessageEmbedField{}
 	player3 := discordgo.MessageEmbedField{}
@@ -142,41 +140,41 @@ func makeStateFields(state string, page int) []*discordgo.MessageEmbedField {
 		Value:  "Something went wrong.",
 		Inline: true,
 	}
-	for i := 0; i < len(users.Users); i++ {
-		if users.Users[i].State == state {
+	for i := 0; i < len(users); i++ {
+		if users[i].State == state {
 			count++
 			if count == start+1 {
 				player1 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
-					Value:  users.Users[i].Username,
+					Value:  users[i].Username,
 					Inline: false,
 				}
 			}
 			if count == start+2 {
 				player2 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
-					Value:  users.Users[i].Username,
+					Value:  users[i].Username,
 					Inline: false,
 				}
 			}
 			if count == start+3 {
 				player3 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
-					Value:  users.Users[i].Username,
+					Value:  users[i].Username,
 					Inline: false,
 				}
 			}
 			if count == start+4 {
 				player4 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
-					Value:  users.Users[i].Username,
+					Value:  users[i].Username,
 					Inline: false,
 				}
 			}
 			if count == start+5 {
 				player5 = discordgo.MessageEmbedField{
 					Name:   strconv.Itoa(count),
-					Value:  users.Users[i].Username,
+					Value:  users[i].Username,
 					Inline: false,
 				}
 			}

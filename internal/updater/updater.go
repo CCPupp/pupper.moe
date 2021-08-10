@@ -12,29 +12,40 @@ import (
 var IsUpdating = false
 
 func StartUpdate() {
+	go updateLoop()
+	go backupLoop()
+}
+
+func updateLoop() {
 	for {
-		doUpdate()
+		go doUpdate()
 		time.Sleep(8 * time.Hour)
 	}
 }
 
 func doUpdate() {
-
 	IsUpdating = true
 	fmt.Println("Starting Update")
 	clientToken := api.GetClientToken()
-	users := player.GetUserJSON()
-	for i := 0; i < len(users.Users); i++ {
-		time.Sleep(300 * time.Millisecond)
-		updateUser(users, i, clientToken)
+	for i := 0; i < len(player.UserList); i++ {
+		updateUser(player.UserList, i, clientToken)
 	}
-	player.BackupUserJSON()
 	IsUpdating = false
 	fmt.Println("Update Complete!")
-
 }
 
-func updateUser(users player.Users, i int, clientToken string) {
-	updatedUser := api.GetUser(strconv.Itoa(users.Users[i].ID), clientToken)
-	player.OverwriteExistingUser(player.GetUserById(users.Users[i].ID), updatedUser)
+func updateUser(users []player.User, i int, clientToken string) {
+	updatedUser := api.GetUser(strconv.Itoa(users[i].ID), clientToken)
+	player.NewOverwriteExistingUser(player.NewGetUserById(users[i].ID), updatedUser)
+}
+
+func backupLoop() {
+	for {
+		go backup()
+		time.Sleep(30 * time.Minute)
+	}
+}
+
+func backup() {
+	player.NewBackupUserJSON()
 }

@@ -23,6 +23,8 @@ import (
 const OnlyBot = false
 
 func main() {
+	player.InitializeUserList()
+	go updater.StartUpdate()
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
@@ -82,16 +84,16 @@ func main() {
 		user := api.GetMe(token)
 		if user.ID != 0 {
 			if bg == "true" || bg == "false" {
-				player.SetUserBg(bg, strconv.Itoa(user.ID))
+				player.NewSetUserBg(bg, strconv.Itoa(user.ID))
 			}
 			if validations.ValidateState(state) {
-				player.SetUserState(state, strconv.Itoa(user.ID))
-				player.SetUserAdvState(advstate, strconv.Itoa(user.ID))
+				player.NewSetUserState(state, strconv.Itoa(user.ID))
+				player.NewSetUserAdvState(advstate, strconv.Itoa(user.ID))
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
 			}
 			idInt, _ := strconv.Atoi(strconv.Itoa(user.ID))
-			user := player.GetUserById(idInt)
+			user := player.NewGetUserById(idInt)
 			fmt.Fprint(w, (htmlbuilder.CreateUser(user, 0)))
 		} else {
 			fmt.Fprint(w, "<h2>Submission Failed.</h2>")
@@ -107,9 +109,9 @@ func main() {
 		state := r.FormValue("state")
 		id := r.FormValue("id")
 		idInt, _ := strconv.Atoi(id)
-		if player.GetUserById(idInt).ID != idInt {
+		if player.NewGetUserById(idInt).ID != idInt {
 			if validations.ValidateState(state) {
-				if player.CheckStateLock(idInt) {
+				if player.NewCheckStateLock(idInt) {
 					fmt.Fprint(w, "<h2>This user is locked!</h2>")
 				} else {
 					if updater.IsUpdating {
@@ -132,7 +134,7 @@ func main() {
 		token := r.FormValue("id")
 		user := api.GetMe(token)
 		//event := api.GetRecent(user.ID, token)
-		localUser := player.GetUserById(user.ID)
+		localUser := player.NewGetUserById(user.ID)
 		//achievement.CheckCompletion(event)
 		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
 	})
@@ -178,12 +180,12 @@ func user(w http.ResponseWriter, r *http.Request) {
 	// }
 	// achievement.CheckCompletion(event)
 	var localUser player.User
-	if player.CheckDuplicate(user.ID) {
-		localUser = player.GetUserById(user.ID)
-		player.OverwriteExistingUser(localUser, user)
+	if player.NewCheckDuplicate(user.ID) {
+		localUser = player.NewGetUserById(user.ID)
+		player.NewOverwriteExistingUser(localUser, user)
 	} else {
-		player.WriteToUser(user)
-		localUser = player.GetUserById(user.ID)
+		player.NewWriteToUser(user)
+		localUser = player.NewGetUserById(user.ID)
 	}
 	fmt.Fprint(w, htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username))
 	fmt.Fprint(w, htmlbuilder.BuildHTMLNavbar())
@@ -199,5 +201,5 @@ func createUserFromId(id string, state string) {
 	clientToken := api.GetClientToken()
 	var newUser player.User = api.GetUser(id, clientToken)
 	newUser.State = state
-	player.WriteToUser(newUser)
+	player.NewWriteToUser(newUser)
 }

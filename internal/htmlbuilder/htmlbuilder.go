@@ -60,8 +60,6 @@ func BuildHTMLNavbar() string {
 }
 
 func CreateAllHTML(loop int) string {
-	users := player.GetUserJSON()
-
 	finalString := BuildHTMLHeader(loop, "All Players")
 	finalString += BuildHTMLNavbar()
 	finalString += `
@@ -69,12 +67,12 @@ func CreateAllHTML(loop int) string {
 	<br>
 	<div class='flex-container'>
 	<ol>
-	<b>Total Users: ` + strconv.Itoa(len(users.Users)) + `</b><br><br>
-	<b>Total Verified Users: ` + player.GetTotalVerified() + `</b><br><br>`
+	<b>Total Users: ` + strconv.Itoa(len(player.UserList)) + `</b><br><br>
+	<b>Total Verified Users: ` + player.NewGetTotalVerified() + `</b><br><br>`
 
-	for i := len(users.Users) - 1; i >= 0; i-- {
-		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='https://osu.ppy.sh/users/" + strconv.Itoa(users.Users[i].ID) + "' class='usercard'>" + users.Users[i].Username + "</a>")
-		finalString += ("<a href='/states/" + users.Users[i].State + "'> State: " + users.Users[i].State + getValidation(users.Users[i]) + "</a></div></li>")
+	for i := len(player.UserList) - 1; i >= 0; i-- {
+		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='https://osu.ppy.sh/users/" + strconv.Itoa(player.UserList[i].ID) + "' class='usercard'>" + player.UserList[i].Username + "</a>")
+		finalString += ("<a href='/states/" + player.UserList[i].State + "'> State: " + player.UserList[i].State + getValidation(player.UserList[i]) + "</a></div></li>")
 	}
 
 	discords := discord.GetDiscordJSON()
@@ -100,9 +98,8 @@ func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop i
 		}
 	}
 	fmt.Fprint(w, BuildHTMLHeader(loop, state))
-	users := player.GetUserJSON()
 
-	users = player.SortUsers(users)
+	users := player.NewSortUsers()
 
 	fmt.Fprint(w, `<body>
     <div class="navbar">
@@ -127,21 +124,21 @@ func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop i
 	}
 
 	rank := 0
-	for i := 0; i < len(users.Users); i++ {
+	for i := 0; i < len(users); i++ {
 		if mode == "all" {
-			if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) {
-				if (advstate != "") && users.Users[i].AdvState == advstate {
+			if (users[i].State == state) && (users[i].Statistics.Global_rank != 0) {
+				if (advstate != "") && users[i].AdvState == advstate {
 					rank++
-					fmt.Fprint(w, CreateUser(users.Users[i], 0))
+					fmt.Fprint(w, CreateUser(users[i], 0))
 				} else if advstate == "" {
 					rank++
-					fmt.Fprint(w, CreateUser(users.Users[i], 0))
+					fmt.Fprint(w, CreateUser(users[i], 0))
 				}
 			}
 		} else {
-			if (users.Users[i].State == state) && (users.Users[i].Statistics.Global_rank != 0) && (users.Users[i].Playmode == mode) {
+			if (users[i].State == state) && (users[i].Statistics.Global_rank != 0) && (users[i].Playmode == mode) {
 				rank++
-				fmt.Fprint(w, CreateUser(users.Users[i], rank))
+				fmt.Fprint(w, CreateUser(users[i], rank))
 			}
 		}
 
@@ -166,7 +163,7 @@ func CreateStats(w http.ResponseWriter) {
 	`)
 
 	fmt.Fprint(w, `
-		<h4>Total Verified: `+player.GetTotalVerified()+`
+		<h4>Total Verified: `+player.NewGetTotalVerified()+`
 	`)
 }
 
@@ -259,7 +256,7 @@ func CreateUser(user player.User, rank int) string {
 	finalString := (`<div class="players-container" id="response">
 						<div class="player">
 							<div class="player-preview">
-							<h4>#` + getModeRank(rank) + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
+							<h4>#` + getModeRank(rank) + strconv.Itoa((player.NewGetUserStateRank(user.ID, user.State))) + `</h4>` + `
 								<image loading="lazy" class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
 								
 							</div>

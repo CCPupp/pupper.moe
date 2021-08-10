@@ -18,6 +18,5 @@ func StartStats() {
 }
 
 func setTotalUsers() {
-	users := player.GetUserJSON()
-	TotalUsers = len(users.Users)
+	TotalUsers = len(player.UserList)
 }
