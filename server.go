@@ -24,7 +24,6 @@ const OnlyBot = false
 
 func main() {
 	player.InitializeUserList()
-	go updater.StartUpdate()
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
