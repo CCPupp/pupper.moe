@@ -83,7 +83,7 @@ func GetUser(id, token string) player.User {
 	}
 
 	osuClient := http.Client{
-		Timeout: time.Second * 5, // Timeout after 5 seconds
+		Timeout: time.Second * 30, // Timeout after 30 seconds
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
@@ -123,7 +123,7 @@ func GetMe(token string) player.User {
 	}
 
 	osuClient := http.Client{
-		Timeout: time.Second * 2, // Timeout after 2 seconds
+		Timeout: time.Second * 30, // Timeout after 30 seconds
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token)
