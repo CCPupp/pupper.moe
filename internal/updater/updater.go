@@ -18,7 +18,7 @@ func StartUpdate() {
 
 func updateLoop() {
 	for {
-		go doUpdate()
+		doUpdate()
 		time.Sleep(8 * time.Hour)
 	}
 }
@@ -41,7 +41,7 @@ func updateUser(users []player.User, i int, clientToken string) {
 
 func backupLoop() {
 	for {
-		go backup()
+		backup()
 		time.Sleep(30 * time.Minute)
 	}
 }
