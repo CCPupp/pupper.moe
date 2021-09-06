@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CCPupp/states.osutools/internal/player"
-	"github.com/CCPupp/states.osutools/internal/validations"
 	"github.com/bwmarrin/discordgo"
+	"states.osutools/player"
+	"states.osutools/validations"
 )
 
 func Ping() string {

@@ -10,14 +10,12 @@ import (
 
 	"secret"
 
-	"github.com/CCPupp/states.osutools/internal/api"
-	"github.com/CCPupp/states.osutools/internal/discord"
-	"github.com/CCPupp/states.osutools/internal/htmlbuilder"
-	"github.com/CCPupp/states.osutools/internal/player"
-	"github.com/CCPupp/states.osutools/internal/updater"
-	"github.com/CCPupp/states.osutools/internal/validations"
-
-	_ "github.com/bmizerany/pq"
+	"states.osutools/api"
+	"states.osutools/discord"
+	"states.osutools/htmlbuilder"
+	"states.osutools/player"
+	"states.osutools/updater"
+	"states.osutools/validations"
 )
 
 const OnlyBot = false

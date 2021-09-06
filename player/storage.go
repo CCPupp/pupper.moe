@@ -21,11 +21,14 @@ func InitializeUserList() {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var users Users
+	var users []User
 
-	json.Unmarshal(byteValue, &users)
+	err = json.Unmarshal(byteValue, &users)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	UserList = users.Users
+	UserList = users
 }
 
 func NewBackupUserJSON() {

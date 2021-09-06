@@ -3,7 +3,7 @@ package stats
 import (
 	"time"
 
-	"github.com/CCPupp/states.osutools/internal/player"
+	"states.osutools/player"
 )
 
 var StatsRunning = false

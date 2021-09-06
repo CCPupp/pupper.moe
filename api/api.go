@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/CCPupp/states.osutools/internal/achievement"
-	"github.com/CCPupp/states.osutools/internal/player"
+	"states.osutools/achievement"
+	"states.osutools/player"
 )
 
 type UserRequest struct {

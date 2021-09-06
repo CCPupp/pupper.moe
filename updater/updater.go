@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/CCPupp/states.osutools/internal/api"
-	"github.com/CCPupp/states.osutools/internal/player"
+	"states.osutools/api"
+	"states.osutools/player"
 )
 
 var IsUpdating = false

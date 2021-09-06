@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CCPupp/states.osutools/internal/achievement"
-	"github.com/CCPupp/states.osutools/internal/discord"
-	"github.com/CCPupp/states.osutools/internal/player"
-	"github.com/CCPupp/states.osutools/internal/stats"
+	"states.osutools/achievement"
+	"states.osutools/discord"
+	"states.osutools/player"
+	"states.osutools/stats"
 )
 
 func BuildHTMLHeader(loop int, state string) string {

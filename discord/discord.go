@@ -12,9 +12,9 @@ import (
 
 	"secret"
 
-	"github.com/CCPupp/states.osutools/internal/commands"
-	"github.com/CCPupp/states.osutools/internal/player"
 	"github.com/bwmarrin/discordgo"
+	"states.osutools/commands"
+	"states.osutools/player"
 )
 
 type Discords struct {
