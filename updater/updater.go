@@ -42,7 +42,7 @@ func updateUser(users []player.User, i int, clientToken string) {
 func backupLoop() {
 	for {
 		go backup()
-		time.Sleep(30 * time.Minute)
+		time.Sleep(24 * time.Hour)
 	}
 }
 
