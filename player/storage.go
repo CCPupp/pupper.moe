@@ -33,7 +33,7 @@ func InitializeUserList() {
 
 func NewBackupUserJSON() {
 	byteValue, _ := json.Marshal(UserList)
-
+	ioutil.WriteFile("web/data/users.json", byteValue, 0644)
 	ioutil.WriteFile("web/data/backups/usersBACKUP"+time.Now().String()+".json", byteValue, 0644)
 }
 
