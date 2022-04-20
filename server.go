@@ -168,14 +168,6 @@ func user(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 	}
 
-	// event := api.GetRecent(user.ID, token)
-	// if achievement.GetAchi(user.ID).Id != user.ID {
-	// 	achievement.NewAchi(achievement.Achi{
-	// 		Id:    user.ID,
-	// 		Stage: 0,
-	// 	})
-	// }
-	// achievement.CheckCompletion(event)
 	var localUser player.User
 	if player.NewCheckDuplicate(user.ID) {
 		localUser = player.NewGetUserById(user.ID)
