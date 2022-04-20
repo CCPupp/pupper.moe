@@ -1,6 +1,5 @@
 #!/bin/bash
-while ! ./server
-do
-  sleep 1
-  echo "Restarting program..."
+until ./server; do
+	echo "Server Crashed! Restarting..."
+  	sleep 1
 done
