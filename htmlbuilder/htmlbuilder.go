@@ -34,6 +34,7 @@ func BuildHTMLHeader(loop int, state string) string {
 	<meta property="og:url" content="https://states.osutools.com" />
 	<meta property="og:image" content="full thumbnail path" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0073930187680157" crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script src="` + finalBack + `web/scripts/main.js"></script>`
 	return finalHeader
