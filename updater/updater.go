@@ -36,7 +36,7 @@ func doUpdate() {
 
 func updateUser(users []player.User, i int, clientToken string) {
 	updatedUser := api.GetUser(strconv.Itoa(users[i].ID), clientToken)
-	player.NewOverwriteExistingUser(player.NewGetUserById(users[i].ID), updatedUser)
+	player.OverwriteExistingUser(player.GetUserById(users[i].ID), updatedUser)
 }
 
 func backupLoop() {
@@ -47,5 +47,5 @@ func backupLoop() {
 }
 
 func backup() {
-	player.NewBackupUserJSON()
+	player.BackupUserJSON()
 }

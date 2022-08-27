@@ -45,7 +45,7 @@ func GetUser(id string) *discordgo.MessageEmbed {
 		Title: "Invalid ID",
 	}
 	if idInt, err := strconv.Atoi(id); err == nil {
-		user := player.NewGetUserById(idInt)
+		user := player.GetUserById(idInt)
 		if user.ID != 0 {
 			embed = discordgo.MessageEmbed{
 				Title:  user.Username,
@@ -64,7 +64,7 @@ func GetUser(id string) *discordgo.MessageEmbed {
 
 func AssignAdmin(user player.User) string {
 	if user.ID != 0 {
-		player.NewSetUserAdmin(user)
+		player.SetUserAdmin(user)
 		return user.Username + " is now an admin."
 	} else {
 		return "Invalid ID"
@@ -73,7 +73,7 @@ func AssignAdmin(user player.User) string {
 
 func LinkDiscordAccount(user player.User, discordUser *discordgo.User) string {
 	if user.ID != 0 && user.Discord == discordUser.Username+"#"+discordUser.Discriminator {
-		player.NewSetUserDiscordID(user, discordUser.ID)
+		player.SetUserDiscordID(user, discordUser.ID)
 		return user.Username + " is linked to " + discordUser.Mention() + "."
 	} else {
 		return "Invalid ID / ID not on userpage."
@@ -108,7 +108,7 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 	}
 	stateRank := discordgo.MessageEmbedField{
 		Name:   "State Rank",
-		Value:  strconv.Itoa(player.NewGetUserStateRank(user.ID, user.State)),
+		Value:  strconv.Itoa(player.GetUserStateRank(user.ID, user.State)),
 		Inline: true,
 	}
 	globalRank := discordgo.MessageEmbedField{
@@ -127,7 +127,7 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 
 func makeStateFields(state string, page int) []*discordgo.MessageEmbedField {
 	fields := []*discordgo.MessageEmbedField{}
-	users := player.NewSortUsers()
+	users := player.SortUsers()
 	player1 := discordgo.MessageEmbedField{}
 	player2 := discordgo.MessageEmbedField{}
 	player3 := discordgo.MessageEmbedField{}

@@ -29,15 +29,35 @@ func InitializeUserList() {
 	}
 
 	UserList = users
+	clean()
 }
 
-func NewBackupUserJSON() {
+func clean() {
+	for i := 0; i < len(UserList); i++ {
+		if UserList[i].Username == "" || UserList[i].State == "" {
+			DeleteUserById(UserList[i].ID)
+		}
+	}
+}
+
+func BackupUserJSON() {
 	byteValue, _ := json.Marshal(UserList)
 	ioutil.WriteFile("web/data/users.json", byteValue, 0644)
 	ioutil.WriteFile("web/data/backups/usersBACKUP"+time.Now().String()+".json", byteValue, 0644)
 }
 
-func NewGetUserById(id int) User {
+func DeleteUserById(id int) {
+	var nullUser User
+	for i := 0; i < len(UserList); i++ {
+		if UserList[i].ID == id {
+			UserList[i] = UserList[len(UserList)-1]
+			UserList[len(UserList)-1] = nullUser
+			UserList = UserList[:len(UserList)-1]
+		}
+	}
+}
+
+func GetUserById(id int) User {
 
 	for i := 0; i < len(UserList); i++ {
 		if UserList[i].ID == id {
@@ -49,7 +69,7 @@ func NewGetUserById(id int) User {
 	return nullUser
 }
 
-func NewGetUserByDiscordId(id string) User {
+func GetUserByDiscordId(id string) User {
 	for i := 0; i < len(UserList); i++ {
 		if UserList[i].DiscordID == id {
 			return UserList[i]
@@ -60,7 +80,7 @@ func NewGetUserByDiscordId(id string) User {
 	return nullUser
 }
 
-func NewCheckDuplicate(dupe int) bool {
+func CheckDuplicate(dupe int) bool {
 
 	for i := 0; i < len(UserList); i++ {
 		if UserList[i].ID == dupe {
@@ -71,7 +91,7 @@ func NewCheckDuplicate(dupe int) bool {
 	return false
 }
 
-func NewSortUsers() []User {
+func SortUsers() []User {
 	var sortedList []User = UserList
 	sort.SliceStable(sortedList, func(i, j int) bool {
 		return UserList[i].Statistics.Global_rank < UserList[j].Statistics.Global_rank
@@ -79,12 +99,12 @@ func NewSortUsers() []User {
 	return sortedList
 }
 
-func NewCheckStateLock(id int) bool {
-	user := NewGetUserById(id)
+func CheckStateLock(id int) bool {
+	user := GetUserById(id)
 	return user.Locks.State_Lock
 }
 
-func NewSetUserState(state string, id string) {
+func SetUserState(state string, id string) {
 	for i := 0; i < len(UserList); i++ {
 		if strconv.Itoa(UserList[i].ID) == id {
 			UserList[i].State = state
@@ -93,7 +113,7 @@ func NewSetUserState(state string, id string) {
 	}
 }
 
-func NewSetUserAdvState(advstate string, id string) {
+func SetUserAdvState(advstate string, id string) {
 	for i := 0; i < len(UserList); i++ {
 		if strconv.Itoa(UserList[i].ID) == id {
 			UserList[i].AdvState = advstate
@@ -101,7 +121,7 @@ func NewSetUserAdvState(advstate string, id string) {
 	}
 }
 
-func NewSetUserBg(bg string, id string) {
+func SetUserBg(bg string, id string) {
 	for i := 0; i < len(UserList); i++ {
 		if strconv.Itoa(UserList[i].ID) == id {
 			UserList[i].Background = bg
@@ -109,7 +129,7 @@ func NewSetUserBg(bg string, id string) {
 	}
 }
 
-func NewSetUserMode(mode string, id string) {
+func SetUserMode(mode string, id string) {
 	for i := 0; i < len(UserList); i++ {
 		if strconv.Itoa(UserList[i].ID) == id {
 			UserList[i].Playmode = mode
@@ -118,7 +138,7 @@ func NewSetUserMode(mode string, id string) {
 	}
 }
 
-func NewSetUserAdmin(user User) {
+func SetUserAdmin(user User) {
 	for i := 0; i < len(UserList); i++ {
 		if UserList[i].ID == user.ID {
 			UserList[i].Admin = true
@@ -126,7 +146,7 @@ func NewSetUserAdmin(user User) {
 	}
 }
 
-func NewSetUserDiscordID(user User, discordID string) {
+func SetUserDiscordID(user User, discordID string) {
 	for i := 0; i < len(UserList); i++ {
 		if UserList[i].ID == user.ID {
 			UserList[i].DiscordID = discordID
@@ -134,7 +154,7 @@ func NewSetUserDiscordID(user User, discordID string) {
 	}
 }
 
-func NewWriteToUser(newUser User) {
+func WriteToUser(newUser User) {
 	var badge Badge
 	var badges []Badge
 	for i := 0; i < len(newUser.Badges); i++ {
@@ -181,7 +201,7 @@ func NewWriteToUser(newUser User) {
 		Badges:         badges,
 	})
 }
-func NewOverwriteExistingUser(existingUser User, pulledUser User) {
+func OverwriteExistingUser(existingUser User, pulledUser User) {
 	var badge Badge
 	var badges []Badge
 	for i := 0; i < len(pulledUser.Badges); i++ {
@@ -235,8 +255,8 @@ func NewOverwriteExistingUser(existingUser User, pulledUser User) {
 	}
 }
 
-func NewGetUserStateRank(id int, state string) int {
-	sortedUsers := NewSortUsers()
+func GetUserStateRank(id int, state string) int {
+	sortedUsers := SortUsers()
 	rank := 0
 	for i := 0; i < len(sortedUsers); i++ {
 		if (sortedUsers[i].State == state) && (sortedUsers[i].Statistics.Global_rank != 0) {
@@ -250,8 +270,8 @@ func NewGetUserStateRank(id int, state string) int {
 	return 0
 }
 
-func NewGetTotalVerified() string {
-	sortedUsers := NewSortUsers()
+func GetTotalVerified() string {
+	sortedUsers := SortUsers()
 	total := 0
 	for i := 0; i < len(sortedUsers); i++ {
 		if sortedUsers[i].Locks.State_Lock {

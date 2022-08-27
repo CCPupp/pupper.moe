@@ -81,16 +81,16 @@ func main() {
 		user := api.GetMe(token)
 		if user.ID != 0 {
 			if bg == "true" || bg == "false" {
-				player.NewSetUserBg(bg, strconv.Itoa(user.ID))
+				player.SetUserBg(bg, strconv.Itoa(user.ID))
 			}
 			if validations.ValidateState(state) {
-				player.NewSetUserState(state, strconv.Itoa(user.ID))
-				player.NewSetUserAdvState(advstate, strconv.Itoa(user.ID))
+				player.SetUserState(state, strconv.Itoa(user.ID))
+				player.SetUserAdvState(advstate, strconv.Itoa(user.ID))
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
 			}
 			idInt, _ := strconv.Atoi(strconv.Itoa(user.ID))
-			user := player.NewGetUserById(idInt)
+			user := player.GetUserById(idInt)
 			fmt.Fprint(w, (htmlbuilder.CreateUser(user, 0)))
 		} else {
 			fmt.Fprint(w, "<h2>Submission Failed.</h2>")
@@ -106,9 +106,9 @@ func main() {
 		state := r.FormValue("state")
 		id := r.FormValue("id")
 		idInt, _ := strconv.Atoi(id)
-		if player.NewGetUserById(idInt).ID != idInt {
+		if player.GetUserById(idInt).ID != idInt {
 			if validations.ValidateState(state) {
-				if player.NewCheckStateLock(idInt) {
+				if player.CheckStateLock(idInt) {
 					fmt.Fprint(w, "<h2>This user is locked!</h2>")
 				} else {
 					if updater.IsUpdating {
@@ -131,7 +131,7 @@ func main() {
 		token := r.FormValue("id")
 		user := api.GetMe(token)
 		//event := api.GetRecent(user.ID, token)
-		localUser := player.NewGetUserById(user.ID)
+		localUser := player.GetUserById(user.ID)
 		//achievement.CheckCompletion(event)
 		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
 	})
@@ -169,12 +169,12 @@ func user(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var localUser player.User
-	if player.NewCheckDuplicate(user.ID) {
-		localUser = player.NewGetUserById(user.ID)
-		player.NewOverwriteExistingUser(localUser, user)
+	if player.CheckDuplicate(user.ID) {
+		localUser = player.GetUserById(user.ID)
+		player.OverwriteExistingUser(localUser, user)
 	} else {
-		player.NewWriteToUser(user)
-		localUser = player.NewGetUserById(user.ID)
+		player.WriteToUser(user)
+		localUser = player.GetUserById(user.ID)
 	}
 	fmt.Fprint(w, htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username))
 	fmt.Fprint(w, htmlbuilder.BuildHTMLNavbar())
@@ -190,5 +190,5 @@ func createUserFromId(id string, state string) {
 	clientToken := api.GetClientToken()
 	var newUser player.User = api.GetUser(id, clientToken)
 	newUser.State = state
-	player.NewWriteToUser(newUser)
+	player.WriteToUser(newUser)
 }

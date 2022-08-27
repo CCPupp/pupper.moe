@@ -69,11 +69,13 @@ func CreateAllHTML(loop int) string {
 	<div class='flex-container'>
 	<ol>
 	<b>Total Users: ` + strconv.Itoa(len(player.UserList)) + `</b><br><br>
-	<b>Total Verified Users: ` + player.NewGetTotalVerified() + `</b><br><br>`
+	<b>Total Verified Users: ` + player.GetTotalVerified() + `</b><br><br>`
 
-	for i := len(player.UserList) - 1; i >= 0; i-- {
-		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='https://osu.ppy.sh/users/" + strconv.Itoa(player.UserList[i].ID) + "' class='usercard'>" + player.UserList[i].Username + "</a>")
-		finalString += ("<a href='/states/" + player.UserList[i].State + "'> State: " + player.UserList[i].State + getValidation(player.UserList[i]) + "</a></div></li>")
+	users := player.SortUsers()
+
+	for i := len(users) - 1; i >= 0; i-- {
+		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='https://osu.ppy.sh/users/" + strconv.Itoa(users[i].ID) + "' class='usercard'>" + users[i].Username + "</a>")
+		finalString += ("<a href='/states/" + users[i].State + "'> State: " + users[i].State + getValidation(users[i]) + "</a></div></li>")
 	}
 
 	discords := discord.GetDiscordJSON()
@@ -100,7 +102,7 @@ func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop i
 	}
 	fmt.Fprint(w, BuildHTMLHeader(loop, state))
 
-	users := player.NewSortUsers()
+	users := player.SortUsers()
 
 	fmt.Fprint(w, `<body>
     <div class="navbar">
@@ -164,7 +166,7 @@ func CreateStats(w http.ResponseWriter) {
 	`)
 
 	fmt.Fprint(w, `
-		<h4>Total Verified: `+player.NewGetTotalVerified()+`
+		<h4>Total Verified: `+player.GetTotalVerified()+`
 	`)
 }
 
@@ -257,7 +259,7 @@ func CreateUser(user player.User, rank int) string {
 	finalString := (`<div class="players-container" id="response">
 						<div class="player">
 							<div class="player-preview">
-							<h4>#` + getModeRank(rank) + strconv.Itoa((player.NewGetUserStateRank(user.ID, user.State))) + `</h4>` + `
+							<h4>#` + getModeRank(rank) + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
 								<image loading="lazy" class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
 								
 							</div>
