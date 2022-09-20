@@ -22,6 +22,7 @@ const OnlyBot = false
 
 func main() {
 	player.InitializeUserList()
+	discord.InitializeDiscords()
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
@@ -45,7 +46,6 @@ func main() {
 			fmt.Fprint(w, (htmlbuilder.BuildHTMLHeader(0, "stats")))
 			htmlbuilder.BuildHTMLNavbar()
 			htmlbuilder.CreateStats(w)
-
 		} else if r.URL.Path[1:7] == "states" {
 			if r.URL.Path[8:] != "" {
 				if r.URL.Path[len(r.URL.Path)-3:] == "osu" {
@@ -77,14 +77,14 @@ func main() {
 		state := r.FormValue("state")
 		advstate := r.FormValue("adv")
 		bg := r.FormValue("bg")
-		token := r.FormValue("id")
+		token := r.FormValue("apitoken")
 		user := api.GetMe(token)
 		if user.ID != 0 {
 			if bg == "true" || bg == "false" {
 				player.SetUserBg(bg, strconv.Itoa(user.ID))
 			}
 			if validations.ValidateState(state) {
-				player.SetUserState(state, strconv.Itoa(user.ID))
+				player.SetUserState(state, strconv.Itoa(user.ID), true)
 				player.SetUserAdvState(advstate, strconv.Itoa(user.ID))
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
@@ -98,42 +98,46 @@ func main() {
 
 	})
 
-	http.HandleFunc("/submitPlayer", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/adminUpdate", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			http.Error(w, fmt.Sprintf("error parsing url %v", err), 500)
 		}
 		state := r.FormValue("state")
-		id := r.FormValue("id")
-		idInt, _ := strconv.Atoi(id)
-		if player.GetUserById(idInt).ID != idInt {
+		advstate := r.FormValue("adv")
+		token := r.FormValue("apitoken")
+		user := api.GetUser(r.FormValue("playerid"), token)
+		if user.ID != 0 {
+			player.SetUserBg("false", strconv.Itoa(user.ID))
 			if validations.ValidateState(state) {
-				if player.CheckStateLock(idInt) {
-					fmt.Fprint(w, "<h2>This user is locked!</h2>")
-				} else {
-					if updater.IsUpdating {
-						fmt.Fprint(w, "<h2>Update in progress, please wait.</h2>")
-					} else {
-						createUserFromId(id, state)
-						fmt.Fprint(w, "<h2>Success!</h2>")
-					}
-				}
+				player.SetUserState(state, strconv.Itoa(user.ID), false)
+				player.SetUserAdvState(advstate, strconv.Itoa(user.ID))
 			} else {
 				fmt.Fprint(w, "<h2>Invalid State.</h2>")
 			}
+			idInt, _ := strconv.Atoi(strconv.Itoa(user.ID))
+			user := player.GetUserById(idInt)
+			fmt.Fprint(w, (htmlbuilder.CreateUser(user, 0)))
 		} else {
-			fmt.Fprint(w, "<h2>User Already Exists.</h2>")
+			fmt.Fprint(w, "<h2>Submission Failed.</h2>")
 		}
 
 	})
 
-	http.HandleFunc("/adminUpdate", func(w http.ResponseWriter, r *http.Request) {
-		token := r.FormValue("id")
+	http.HandleFunc("/delete", func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, fmt.Sprintf("error parsing url %v", err), 500)
+		}
+		token := r.FormValue("token")
 		user := api.GetMe(token)
-		//event := api.GetRecent(user.ID, token)
-		localUser := player.GetUserById(user.ID)
-		//achievement.CheckCompletion(event)
-		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
+		if user.ID != 0 {
+			player.DeleteUserById(user.ID)
+			fmt.Fprint(w, "<h2>Success! You can add yourself back to the leaderboard at any time. I do not store any information about your account.</h2>")
+		} else {
+			fmt.Fprint(w, "<h2>Deletion Failed, please contact Pupper in the Development Discord if you think this was a mistake.</h2>")
+		}
+
 	})
 
 	//Serves local webpage for testing
@@ -178,17 +182,11 @@ func user(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprint(w, htmlbuilder.BuildHTMLHeader(1, "Just "+localUser.Username))
 	fmt.Fprint(w, htmlbuilder.BuildHTMLNavbar())
+	if localUser.Admin {
+		fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser, token))
+	}
 	fmt.Fprint(w, htmlbuilder.CreateUser(localUser, 0))
 	fmt.Fprint(w, htmlbuilder.CreateOptions(localUser, token))
-	//if localUser.Admin {
-	//fmt.Fprint(w, htmlbuilder.CreateAdminPanel(localUser))
-	//}
-	fmt.Fprint(w, htmlbuilder.BuildHTMLFooter())
-}
 
-func createUserFromId(id string, state string) {
-	clientToken := api.GetClientToken()
-	var newUser player.User = api.GetUser(id, clientToken)
-	newUser.State = state
-	player.WriteToUser(newUser)
+	fmt.Fprint(w, htmlbuilder.BuildHTMLFooter())
 }

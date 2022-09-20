@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"sort"
 	"strconv"
 	"strings"
 	"syscall"
@@ -17,22 +18,20 @@ import (
 	"states.osutools/player"
 )
 
-type Discords struct {
-	Discords []Discord `json:"discords"`
-}
-
 type Discord struct {
 	State string `json:"state"`
 	Link  string `json:"link"`
 }
 
+var DiscordList []Discord
+
 const prefix = "-"
 const botToken = secret.DISCORD_TOKEN
 
-//ponpar discord ID
+// ponpar discord ID
 const adminID = "98190856254676992"
 
-func GetDiscordJSON() Discords {
+func InitializeDiscords() {
 	// Open our jsonFile
 	discordJsonFile, err := os.Open("web/data/discords.json")
 	// if we os.Open returns an error then handle it
@@ -44,11 +43,19 @@ func GetDiscordJSON() Discords {
 
 	discordByteValue, _ := ioutil.ReadAll(discordJsonFile)
 
-	var discords Discords
+	var discords []Discord
 
 	json.Unmarshal(discordByteValue, &discords)
 
-	return discords
+	DiscordList = discords
+	sortDiscords()
+}
+
+func sortDiscords() {
+	var sortedList []Discord = DiscordList
+	sort.SliceStable(sortedList, func(i, j int) bool {
+		return DiscordList[i].State < DiscordList[j].State
+	})
 }
 
 func StartBot() {

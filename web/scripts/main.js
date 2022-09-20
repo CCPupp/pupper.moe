@@ -3,7 +3,7 @@ $(document).ready(function() {
         var adv = $("#adv").val();
         var bg = $("#bg").val();
         var state = $("#state").val();
-        var id = $("#userid").val();
+        var apitoken = $("#apitoken").val();
         $.ajax({
             url: "/update",
             method: "GET",
@@ -11,7 +11,7 @@ $(document).ready(function() {
             data: {
                 bg: bg,
                 state: state,
-                id: id,
+                apitoken: apitoken,
                 adv: adv,
             },
             success: function(data) {
@@ -22,16 +22,20 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    $("#submitPlayer").on('click', function() {
-        var state = $("#state").val();
-        var id = $("#id").val();
+    $("#adminupdate").on('click', function() {
+        var adv = $("#adminadv").val();
+        var state = $("#adminstate").val();
+        var apitoken = $("#admintoken").val();
+		var playerid = $("#playerid").val();
         $.ajax({
-            url: "/submitPlayer",
+            url: "/adminUpdate",
             method: "GET",
             contentType: "application/x-www-form-urlencoded",
             data: {
                 state: state,
-                id: id
+                apitoken: apitoken,
+                adv: adv,
+				playerid: playerid,
             },
             success: function(data) {
                 $("#response").html(data);
@@ -41,17 +45,17 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    $("#adminupdate").on('click', function() {
-        var id = $("#userid").val();
+    $("#delete").on('click', function() {
+        var token = $("#apitoken").val();
         $.ajax({
-            url: "/adminUpdate",
+            url: "/delete",
             method: "GET",
             contentType: "application/x-www-form-urlencoded",
             data: {
-                id: id
+                token: token,
             },
             success: function(data) {
-                $("#testing-panel").html(data);
+                $("#response").html(data);
             },
         });
     });

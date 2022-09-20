@@ -7,10 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"states.osutools/achievement"
 	"states.osutools/discord"
 	"states.osutools/player"
-	"states.osutools/stats"
 )
 
 func BuildHTMLHeader(loop int, state string) string {
@@ -18,7 +16,7 @@ func BuildHTMLHeader(loop int, state string) string {
 	finalBack := strings.Repeat(backString, loop)
 	var finalHeader string = `<!DOCTYPE html>
 	<html>
-	<title>` + state + ` Leaderboard</title>
+	<title>` + state + `</title>
 	<meta charset="UTF-8" />
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
@@ -71,19 +69,17 @@ func CreateAllHTML(loop int) string {
 	<b>Total Users: ` + strconv.Itoa(len(player.UserList)) + `</b><br><br>
 	<b>Total Verified Users: ` + player.GetTotalVerified() + `</b><br><br>`
 
-	users := player.SortUsers()
+	users := player.UserList
 
 	for i := len(users) - 1; i >= 0; i-- {
 		finalString += ("<li><div style='height: 40px;' class='flex-center'><a href='https://osu.ppy.sh/users/" + strconv.Itoa(users[i].ID) + "' class='usercard'>" + users[i].Username + "</a>")
 		finalString += ("<a href='/states/" + users[i].State + "'> State: " + users[i].State + getValidation(users[i]) + "</a></div></li>")
 	}
 
-	discords := discord.GetDiscordJSON()
-
 	finalString += `</ol><ol>`
 
-	for i := 0; i < len(discords.Discords); i++ {
-		finalString += `<a href=` + discords.Discords[i].Link + `> ` + discords.Discords[i].State + `'s Discord Server </a><br><br>`
+	for i := 0; i < len(discord.DiscordList); i++ {
+		finalString += `<a href=` + discord.DiscordList[i].Link + `> ` + discord.DiscordList[i].State + `'s Discord Server </a><br><br>`
 	}
 
 	finalString += `</div></body>`
@@ -93,16 +89,15 @@ func CreateAllHTML(loop int) string {
 }
 
 func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop int) {
-	discords := discord.GetDiscordJSON()
 	discordString := ""
-	for i := 0; i < len(discords.Discords); i++ {
-		if discords.Discords[i].State == state {
-			discordString += `<a href="` + discords.Discords[i].Link + `"> Discord Server </a>`
+	for i := 0; i < len(discord.DiscordList); i++ {
+		if discord.DiscordList[i].State == state {
+			discordString += `<a href="` + discord.DiscordList[i].Link + `"> Discord Server </a>`
 		}
 	}
 	fmt.Fprint(w, BuildHTMLHeader(loop, state))
 
-	users := player.SortUsers()
+	users := player.SortUsersByRank()
 
 	fmt.Fprint(w, `<body>
     <div class="navbar">
@@ -162,7 +157,7 @@ func CreateStats(w http.ResponseWriter) {
 	<br>`)
 
 	fmt.Fprint(w, `
-		<h4>Total Users: `+strconv.Itoa(stats.TotalUsers)+`
+		<h4>Total Users: `+strconv.Itoa(len(player.UserList))+`
 	`)
 
 	fmt.Fprint(w, `
@@ -170,12 +165,43 @@ func CreateStats(w http.ResponseWriter) {
 	`)
 }
 
+func CreateUser(user player.User, rank int) string {
+	finalString := (`<div class="players-container" id="response">
+						<div class="player">
+							<div class="player-preview">
+							<h4>#` + getModeRank(rank) + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
+								<image loading="lazy" class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
+								
+							</div>
+							<div loading="lazy" class="player-info" style="` + getBackground(user) + `">
+								<div class="progress-container">
+									<span class="progress-text hide-on-mobile">
+										<h5>Mode: ` + user.Playmode + `</h5>
+										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
+										<h5>Discord: ` + user.Discord + getLink(user) + `</h5>
+									</span>
+								</div>
+								<h6>` + user.State + getValidation(user) + `</h6>
+								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
+								<h4>Total PP: ` + floatToString(user.Statistics.Pp) + `</h4>
+								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
+								<h4>Accuracy: ` + floatToString(user.Statistics.Accuracy) + `</h4>
+								<h4>Playcount: ` + strconv.Itoa(user.Statistics.Play_count) + `</h4>
+							</div>
+						</div>
+						` + getBadges(user) + `
+					</div>
+				</div>`)
+	return finalString
+}
+
 func CreateOptions(user player.User, token string) string {
-	finalString := (`<div class="settings-container player-container black-font">
+	finalString := (`<br>
+					<div class="settings-container players-container black-font">
 						<div class="user-settings">
 							<div class="settings-info">
 								<p class="black-font">Hello ` + user.Username + `! Here you can change how your player card appears on the state leaderboard.</p>
-								<input type="hidden" id="userid" value="` + token + `"/>
+								<input type="hidden" id="apitoken" value="` + token + `"/>
 								<br>
 								<select id="bg">
 									<option value="` + user.Background + `" selected hidden>` + getBackgroundText(user) + `</option>
@@ -250,64 +276,88 @@ func CreateOptions(user player.User, token string) string {
 								<br>
 								<br>
 								<button id="update">Submit</button>
+								<button id="delete">Delete Yourself</button>
 							</div>
 						</div>`)
 	return finalString
 }
 
-func CreateUser(user player.User, rank int) string {
-	finalString := (`<div class="players-container" id="response">
-						<div class="player">
-							<div class="player-preview">
-							<h4>#` + getModeRank(rank) + strconv.Itoa((player.GetUserStateRank(user.ID, user.State))) + `</h4>` + `
-								<image loading="lazy" class="playerpfp" href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" src="http://s.ppy.sh/a/` + strconv.Itoa(user.ID) + `"></image>
-								
-							</div>
-							<div loading="lazy" class="player-info" style="` + getBackground(user) + `">
-								<div class="progress-container">
-									<span class="progress-text hide-on-mobile">
-										<h5>Mode: ` + user.Playmode + `</h5>
-										<h5>Level ` + strconv.Itoa(user.Statistics.Level.Current) + `.` + strconv.Itoa(user.Statistics.Level.Progress) + `</h5>
-										<h5>Discord: ` + user.Discord + getLink(user) + `</h5>
-									</span>
-								</div>
-								<h6>` + user.State + getValidation(user) + `</h6>
-								<a href="https://osu.ppy.sh/users/` + strconv.Itoa(user.ID) + `" target="_blank"><h2>` + user.Username + `</h2></a>
-								<h4>Total PP: ` + floatToString(user.Statistics.Pp) + `</h4>
-								<h4>Global Rank: ` + strconv.Itoa(user.Statistics.Global_rank) + `</h4>
-								<h4>Accuracy: ` + floatToString(user.Statistics.Accuracy) + `</h4>
-								<h4>Playcount: ` + strconv.Itoa(user.Statistics.Play_count) + `</h4>
-							</div>
-						</div>
-						` + getBadges(user) + `
-					</div>
-				</div>`)
-	return finalString
-}
-
-func CreateAdminPanel(user player.User) string {
-	achi := achievement.GetAchi(user.ID)
-	finalString := (`<div class="settings-container player-container" id="testing-panel">
-						<div class="user-settings">
+func CreateAdminPanel(user player.User, token string) string {
+	finalString := (`<div class="settings-container admin-container">
+						<div class="user-settings black-font">
 							<div class="settings-info">
-								<p class="black-font">Testing Panel.</p>
-								<input type="hidden" id="userid" value="` + strconv.Itoa(user.ID) + `"/>
+								<p class="black-font">Hello ` + user.Username + `! Here is your admin panel to add other users with.</p>
+								<input type="hidden" id="admintoken" value="` + token + `"/>
+								<input id="playerid" value=""/>
+								<label>User ID</label>
 								<br>
-								<h2 class="black-font">Overall Stage: ` + strconv.Itoa(achi.Stage) + ` | ` + achi.StageNext + `</h2>
-								`)
-	if achi.Stage > 0 {
-		finalString += (`
-									<p class="black-font">Accuracy Stage: ` + strconv.Itoa(achi.AccuracyStage) + ` | ` + achi.AccuracyStageNext + `</p>
-									<p class="black-font">Precision Stage: ` + strconv.Itoa(achi.PrecisionStage) + ` | ` + achi.PrecisionStageNext + `</p>
-									<p class="black-font">Reading Stage: ` + strconv.Itoa(achi.ReadingStage) + ` | ` + achi.ReadingStageNext + `</p>
-									<p class="black-font">Speed Stage: ` + strconv.Itoa(achi.SpeedStage) + ` | ` + achi.SpeedStageNext + `</p>
-									<p class="black-font">Stamina Stage: ` + strconv.Itoa(achi.StaminaStage) + ` | ` + achi.StaminaStageNext + `</p>
-								`)
-	}
-	finalString += (`<button id="adminupdate">Check Stage Completion</button>
+								<br>
+								<select id="adminstate">
+									<option value="Alabama" selected>Alabama</option>
+									<option value="Alaska">Alaska</option>
+									<option value="Arizona">Arizona</option>
+									<option value="Arkansas">Arkansas</option>
+									<option value="California">California</option>
+									<option value="Colorado">Colorado</option>
+									<option value="Connecticut">Connecticut</option>
+									<option value="Delaware">Delaware</option>
+									<option value="Florida">Florida</option>
+									<option value="Georgia">Georgia</option>
+									<option value="Hawaii">Hawaii</option>
+									<option value="Idaho">Idaho</option>
+									<option value="Illinois">Illinois</option>
+									<option value="Indiana">Indiana</option>
+									<option value="Iowa">Iowa</option>
+									<option value="Kansas">Kansas</option>
+									<option value="Kentucky">Kentucky</option>
+									<option value="Louisiana">Louisiana</option>
+									<option value="Maine">Maine</option>
+									<option value="Maryland">Maryland</option>
+									<option value="Massachusetts">Massachusetts</option>
+									<option value="Michigan">Michigan</option>
+									<option value="Minnesota">Minnesota</option>
+									<option value="Mississippi">Mississippi</option>
+									<option value="Missouri">Missouri</option>
+									<option value="Montana">Montana</option>
+									<option value="Nebraska">Nebraska</option>
+									<option value="Nevada">Nevada</option>
+									<option value="New Hampshire">New Hampshire</option>
+									<option value="New Jersey">New Jersey</option>
+									<option value="New Mexico">New Mexico</option>
+									<option value="New York">New York</option>
+									<option value="North Carolina">North Carolina</option>
+									<option value="North Dakota">North Dakota</option>
+									<option value="Ohio">Ohio</option>
+									<option value="Oklahoma">Oklahoma</option>
+									<option value="Oregon">Oregon</option>
+									<option value="Pennsylvania">Pennsylvania</option>
+									<option value="Rhode Island">Rhode Island</option>
+									<option value="South Carolina">South Carolina</option>
+									<option value="South Dakota">South Dakota</option>
+									<option value="Tennessee">Tennessee</option>
+									<option value="Texas">Texas</option>
+									<option value="Utah">Utah</option>
+									<option value="Vermont">Vermont</option>
+									<option value="Virginia">Virginia</option>
+									<option value="Washington">Washington</option>
+									<option value="West Virginia">West Virginia</option>
+									<option value="Wisconsin">Wisconsin</option>
+									<option value="Wyoming">Wyoming</option>
+								</select>	
+								<label>State Selection</label>
+								<br>
+								<br>
+								<select id="adminadv">
+									<option value="" selected hidden></option>
+									<option value="North">North</option>
+									<option value="South">South</option>
+								</select>
+								<label>(California Only) North / South</label>
+								<br>
+								<br>
+								<button id="adminupdate">Submit</button>
 							</div>
 						</div>`)
-
 	return finalString
 }
 

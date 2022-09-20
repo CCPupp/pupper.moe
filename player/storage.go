@@ -30,6 +30,15 @@ func InitializeUserList() {
 
 	UserList = users
 	clean()
+	alphabetizeUsers()
+}
+
+func alphabetizeUsers() {
+	var sortedList []User = UserList
+	sort.SliceStable(sortedList, func(i, j int) bool {
+		return UserList[i].Username > UserList[j].Username
+	})
+	UserList = sortedList
 }
 
 func clean() {
@@ -44,6 +53,14 @@ func BackupUserJSON() {
 	byteValue, _ := json.Marshal(UserList)
 	ioutil.WriteFile("web/data/users.json", byteValue, 0644)
 	ioutil.WriteFile("web/data/backups/usersBACKUP"+time.Now().String()+".json", byteValue, 0644)
+}
+
+func SortUsersByRank() []User {
+	var sortedList []User = UserList
+	sort.SliceStable(sortedList, func(i, j int) bool {
+		return UserList[i].Statistics.Global_rank < UserList[j].Statistics.Global_rank
+	})
+	return sortedList
 }
 
 func DeleteUserById(id int) {
@@ -91,24 +108,16 @@ func CheckDuplicate(dupe int) bool {
 	return false
 }
 
-func SortUsers() []User {
-	var sortedList []User = UserList
-	sort.SliceStable(sortedList, func(i, j int) bool {
-		return UserList[i].Statistics.Global_rank < UserList[j].Statistics.Global_rank
-	})
-	return sortedList
-}
-
 func CheckStateLock(id int) bool {
 	user := GetUserById(id)
 	return user.Locks.State_Lock
 }
 
-func SetUserState(state string, id string) {
+func SetUserState(state string, id string, verified bool) {
 	for i := 0; i < len(UserList); i++ {
 		if strconv.Itoa(UserList[i].ID) == id {
 			UserList[i].State = state
-			UserList[i].Locks.State_Lock = true
+			UserList[i].Locks.State_Lock = verified
 		}
 	}
 }
@@ -256,12 +265,11 @@ func OverwriteExistingUser(existingUser User, pulledUser User) {
 }
 
 func GetUserStateRank(id int, state string) int {
-	sortedUsers := SortUsers()
 	rank := 0
-	for i := 0; i < len(sortedUsers); i++ {
-		if (sortedUsers[i].State == state) && (sortedUsers[i].Statistics.Global_rank != 0) {
+	for i := 0; i < len(UserList); i++ {
+		if (UserList[i].State == state) && (UserList[i].Statistics.Global_rank != 0) {
 			rank++
-			if sortedUsers[i].ID == id {
+			if UserList[i].ID == id {
 				return rank
 			}
 		}
@@ -271,10 +279,9 @@ func GetUserStateRank(id int, state string) int {
 }
 
 func GetTotalVerified() string {
-	sortedUsers := SortUsers()
 	total := 0
-	for i := 0; i < len(sortedUsers); i++ {
-		if sortedUsers[i].Locks.State_Lock {
+	for i := 0; i < len(UserList); i++ {
+		if UserList[i].Locks.State_Lock {
 			total++
 		}
 	}

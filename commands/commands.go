@@ -4,9 +4,10 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"states.osutools/player"
 	"states.osutools/validations"
 )
@@ -84,10 +85,11 @@ func GetStateLeaderboard(state string, page int) *discordgo.MessageEmbed {
 	embed := discordgo.MessageEmbed{
 		Title: "Invalid State / Account Not Linked",
 	}
-	if validations.ValidateState(strings.Title(state)) {
+	caser := cases.Title(language.English)
+	if validations.ValidateState(caser.String(state)) {
 		embed = discordgo.MessageEmbed{
-			Title:  strings.Title(state),
-			Fields: makeStateFields(strings.Title(state), page),
+			Title:  caser.String(state),
+			Fields: makeStateFields(caser.String(state), page),
 		}
 		return &embed
 	}
@@ -127,7 +129,7 @@ func makeUserFields(user player.User) []*discordgo.MessageEmbedField {
 
 func makeStateFields(state string, page int) []*discordgo.MessageEmbedField {
 	fields := []*discordgo.MessageEmbedField{}
-	users := player.SortUsers()
+	users := player.UserList
 	player1 := discordgo.MessageEmbedField{}
 	player2 := discordgo.MessageEmbedField{}
 	player3 := discordgo.MessageEmbedField{}
