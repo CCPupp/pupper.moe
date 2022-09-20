@@ -109,7 +109,6 @@ func GetUser(id, token string) player.User {
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
 	}
-	log.Print("User: " + user.Username)
 	return user
 }
 

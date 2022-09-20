@@ -23,7 +23,7 @@ const OnlyBot = false
 func main() {
 	player.InitializeUserList()
 	discord.InitializeDiscords()
-	if !secret.IS_TESTING {
+	if secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
 	// go stats.StartStats()
@@ -149,10 +149,7 @@ func main() {
 			}
 		} else {
 			//Serves the webpage to the internet
-			errhttps := http.ListenAndServeTLS(":443", "certs/cert.pem", "certs/key.pem", nil)
-			if errhttps != nil {
-				log.Fatal("Web server (HTTPS): ", errhttps)
-			}
+			http.ListenAndServeTLS(":443", "certs/cert.pem", "certs/key.pem", nil)
 		}
 	}
 
