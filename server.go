@@ -23,7 +23,7 @@ const OnlyBot = false
 func main() {
 	player.InitializeUserList()
 	discord.InitializeDiscords()
-	if secret.IS_TESTING {
+	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}
 	// go stats.StartStats()
