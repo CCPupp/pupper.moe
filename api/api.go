@@ -41,7 +41,7 @@ func GetRecent(id int, token string) []achievement.Score {
 	url := "https://osu.ppy.sh/api/v2/users/" + (strconv.Itoa(id)) + "/scores/recent?include_fails=1"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	osuClient := http.Client{
@@ -54,7 +54,7 @@ func GetRecent(id int, token string) []achievement.Score {
 
 	res, getErr := osuClient.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		log.Println(getErr)
 	}
 
 	if res.Body != nil {
@@ -63,13 +63,13 @@ func GetRecent(id int, token string) []achievement.Score {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		log.Println(readErr)
 	}
 
 	var event []achievement.Score
 	jsonErr := json.Unmarshal(body, &event)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(jsonErr)
 	}
 	return event
 }
@@ -79,7 +79,7 @@ func GetUser(id, token string) player.User {
 	url := "https://osu.ppy.sh/api/v2/users/" + id
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	osuClient := http.Client{
@@ -92,7 +92,7 @@ func GetUser(id, token string) player.User {
 
 	res, getErr := osuClient.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		log.Println(getErr)
 	}
 
 	if res.Body != nil {
@@ -101,13 +101,13 @@ func GetUser(id, token string) player.User {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		log.Println(readErr)
 	}
 
 	var user player.User
 	jsonErr := json.Unmarshal(body, &user)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(jsonErr)
 	}
 	return user
 }
@@ -118,7 +118,7 @@ func GetMe(token string) player.User {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	osuClient := http.Client{
@@ -131,7 +131,7 @@ func GetMe(token string) player.User {
 
 	res, getErr := osuClient.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		log.Println(getErr)
 	}
 
 	if res.Body != nil {
@@ -140,13 +140,13 @@ func GetMe(token string) player.User {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		log.Println(readErr)
 	}
 
 	var user player.User
 	jsonErr := json.Unmarshal(body, &user)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(jsonErr)
 	}
 
 	return user
@@ -167,7 +167,7 @@ func GetUserToken(key string) string {
 	client := &http.Client{}
 	res, getErr := client.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		log.Println(getErr)
 	}
 
 	if res.Body != nil {
@@ -176,13 +176,13 @@ func GetUserToken(key string) string {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		log.Println(readErr)
 	}
 
 	var token Token
 	jsonErr := json.Unmarshal(body, &token)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(jsonErr)
 	}
 
 	return token.Access_token
@@ -202,7 +202,7 @@ func GetClientToken() string {
 	client := &http.Client{}
 	res, getErr := client.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		log.Println(getErr)
 	}
 
 	if res.Body != nil {
@@ -211,13 +211,13 @@ func GetClientToken() string {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal(readErr)
+		log.Println(readErr)
 	}
 
 	var token Token
 	jsonErr := json.Unmarshal(body, &token)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(jsonErr)
 	}
 
 	return token.Access_token
