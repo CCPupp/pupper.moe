@@ -90,9 +90,15 @@ func CreateAllHTML(loop int) string {
 
 func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop int) {
 	discordString := ""
+	youtubeString := ""
 	for i := 0; i < len(discord.DiscordList); i++ {
 		if discord.DiscordList[i].State == state {
 			discordString += `<a href="` + discord.DiscordList[i].Link + `"> Discord Server </a>`
+		}
+	}
+	for i := 0; i < len(discord.YoutubeList); i++ {
+		if discord.YoutubeList[i].State == state {
+			youtubeString += `<a href="` + discord.YoutubeList[i].Link + `"> Youtube Channel </a>`
 		}
 	}
 	fmt.Fprint(w, BuildHTMLHeader(loop, state))
@@ -106,6 +112,7 @@ func CreateStateHTML(w http.ResponseWriter, state, advstate, mode string, loop i
 	fmt.Fprint(w, state+" / "+mode)
 	fmt.Fprint(w, `</a>
 	`+discordString+`
+	`+youtubeString+`
 	<a href="/states/`+state+`/osu">Standard</a>
 	<a href="/states/`+state+`/mania">Mania</a>
 	<a href="/states/`+state+`/catch">Catch</a>

@@ -23,6 +23,7 @@ const OnlyBot = false
 func main() {
 	player.InitializeUserList()
 	discord.InitializeDiscords()
+	discord.InitializeYoutubes()
 	if !secret.IS_TESTING {
 		go updater.StartUpdate()
 	}

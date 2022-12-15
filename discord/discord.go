@@ -23,7 +23,13 @@ type Discord struct {
 	Link  string `json:"link"`
 }
 
+type Youtube struct {
+	State string `json:"state"`
+	Link  string `json:"link"`
+}
+
 var DiscordList []Discord
+var YoutubeList []Youtube
 
 const prefix = "-"
 const botToken = secret.DISCORD_TOKEN
@@ -49,6 +55,25 @@ func InitializeDiscords() {
 
 	DiscordList = discords
 	sortDiscords()
+}
+
+func InitializeYoutubes() {
+	// Open our jsonFile
+	youtubeJsonFile, err := os.Open("web/data/youtube.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer youtubeJsonFile.Close()
+
+	youtubeByteValue, _ := ioutil.ReadAll(youtubeJsonFile)
+
+	var youtubes []Youtube
+
+	json.Unmarshal(youtubeByteValue, &youtubes)
+
+	YoutubeList = youtubes
 }
 
 func sortDiscords() {
