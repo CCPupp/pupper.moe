@@ -3,7 +3,7 @@ package player
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"sort"
 	"strconv"
@@ -19,7 +19,7 @@ func InitializeUserList() {
 	}
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := io.ReadAll(jsonFile)
 
 	var users []User
 
@@ -27,6 +27,8 @@ func InitializeUserList() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	defer jsonFile.Close()
 
 	UserList = users
 	clean()
@@ -51,8 +53,8 @@ func clean() {
 
 func BackupUserJSON() {
 	byteValue, _ := json.Marshal(UserList)
-	ioutil.WriteFile("web/data/users.json", byteValue, 0644)
-	ioutil.WriteFile("web/data/backups/usersBACKUP"+time.Now().String()+".json", byteValue, 0644)
+	os.WriteFile("web/data/users.json", byteValue, 0644)
+	os.WriteFile("web/data/backups/usersBACKUP"+time.Now().String()+".json", byteValue, 0644)
 }
 
 func SortUsersByRank() []User {
