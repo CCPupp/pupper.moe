@@ -3,7 +3,8 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"errors"
+	"io"
 	"log"
 	"net/http"
 	"secret"
@@ -61,7 +62,7 @@ func GetRecent(id int, token string) []achievement.Score {
 		defer res.Body.Close()
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
+	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
 		log.Println(readErr)
 	}
@@ -75,7 +76,8 @@ func GetRecent(id int, token string) []achievement.Score {
 }
 
 // GetUser returns User with data from the osu! APIv2
-func GetUser(id, token string) player.User {
+func GetUser(id, token string) (player.User, error) {
+	var user player.User
 	url := "https://osu.ppy.sh/api/v2/users/" + id
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -93,23 +95,23 @@ func GetUser(id, token string) player.User {
 	res, getErr := osuClient.Do(req)
 	if getErr != nil {
 		log.Println(getErr)
+		return user, errors.New("context timeout")
 	}
 
 	if res.Body != nil {
 		defer res.Body.Close()
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
+	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
 		log.Println(readErr)
 	}
 
-	var user player.User
 	jsonErr := json.Unmarshal(body, &user)
 	if jsonErr != nil {
 		log.Println(jsonErr)
 	}
-	return user
+	return user, nil
 }
 
 // GetMe returns User with data from the osu! APIv2 using their default game mode
@@ -138,7 +140,7 @@ func GetMe(token string) player.User {
 		defer res.Body.Close()
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
+	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
 		log.Println(readErr)
 	}
@@ -174,7 +176,7 @@ func GetUserToken(key string) string {
 		defer res.Body.Close()
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
+	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
 		log.Println(readErr)
 	}
@@ -209,7 +211,7 @@ func GetClientToken() string {
 		defer res.Body.Close()
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
+	body, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
 		log.Println(readErr)
 	}

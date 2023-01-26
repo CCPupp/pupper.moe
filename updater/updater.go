@@ -39,8 +39,10 @@ func doUpdate() {
 }
 
 func updateUser(users []player.User, i int, clientToken string) {
-	updatedUser := api.GetUser(strconv.Itoa(users[i].ID), clientToken)
-	player.OverwriteExistingUser(player.GetUserById(users[i].ID), updatedUser)
+	updatedUser, err := api.GetUser(strconv.Itoa(users[i].ID), clientToken)
+	if err != nil {
+		player.OverwriteExistingUser(player.GetUserById(users[i].ID), updatedUser)
+	}
 }
 
 func progressLoop() {

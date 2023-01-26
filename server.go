@@ -107,7 +107,10 @@ func main() {
 		state := r.FormValue("state")
 		advstate := r.FormValue("adv")
 		token := r.FormValue("apitoken")
-		user := api.GetUser(r.FormValue("playerid"), token)
+		user, apierr := api.GetUser(r.FormValue("playerid"), token)
+		if apierr != nil {
+			fmt.Fprint(w, "Something went wrong, osu! API probably timed out.")
+		}
 		if user.ID != 0 {
 			player.SetUserBg("false", strconv.Itoa(user.ID))
 			if validations.ValidateState(state) {
