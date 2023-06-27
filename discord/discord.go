@@ -3,7 +3,7 @@ package discord
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/signal"
 	"sort"
@@ -47,7 +47,7 @@ func InitializeDiscords() {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer discordJsonFile.Close()
 
-	discordByteValue, _ := ioutil.ReadAll(discordJsonFile)
+	discordByteValue, _ := io.ReadAll(discordJsonFile)
 
 	var discords []Discord
 
@@ -67,7 +67,7 @@ func InitializeYoutubes() {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer youtubeJsonFile.Close()
 
-	youtubeByteValue, _ := ioutil.ReadAll(youtubeJsonFile)
+	youtubeByteValue, _ := io.ReadAll(youtubeJsonFile)
 
 	var youtubes []Youtube
 

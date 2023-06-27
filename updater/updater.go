@@ -30,7 +30,7 @@ func doUpdate() {
 	clientToken := api.GetClientToken()
 	for i := 0; i < len(player.UserList); i++ {
 		Progress = (float64(i) / float64(len(player.UserList)))
-		updateUser(player.UserList, i, clientToken)
+		updateUser(i, clientToken)
 	}
 	IsUpdating = false
 	fmt.Println("Update Complete!")
@@ -38,10 +38,10 @@ func doUpdate() {
 	fmt.Println("Backups Created!")
 }
 
-func updateUser(users []player.User, i int, clientToken string) {
-	updatedUser, err := api.GetUser(strconv.Itoa(users[i].ID), clientToken)
-	if err != nil {
-		player.OverwriteExistingUser(player.GetUserById(users[i].ID), updatedUser)
+func updateUser(i int, clientToken string) {
+	updatedUser, err := api.GetUser(strconv.Itoa(player.UserList[i].ID), clientToken)
+	if err == nil {
+		player.OverwriteExistingUser(player.GetUserById(player.UserList[i].ID), updatedUser)
 	}
 }
 
